@@ -1,2 +1,4 @@
 # Chtholly-CBlog
-CBlog is a Chthollied style Blog. 
+CBlog is a Chthollied style Blog.
+
+Now Building~
