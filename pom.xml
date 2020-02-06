@@ -15,9 +15,10 @@
     <version>1.0-SNAPSHOT</version>
 
 
-    <modules>
+       <modules>
         <module>inkfish-mapper</module>
         <module>inkfish-model</module>
+        <module>inkfish-service</module>
     </modules>
 
 

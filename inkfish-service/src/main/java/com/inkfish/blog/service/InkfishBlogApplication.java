@@ -1,13 +1,13 @@
-package com.inkfish.blog.mapper;
+package com.inkfish.blog.service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class InkfishMapperApplication {
+public class InkfishBlogApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(InkfishMapperApplication.class, args);
+        SpringApplication.run(InkfishBlogApplication.class, args);
     }
 
 }
