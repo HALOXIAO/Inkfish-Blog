@@ -15,10 +15,11 @@
     <version>1.0-SNAPSHOT</version>
 
 
-       <modules>
+    <modules>
         <module>inkfish-mapper</module>
         <module>inkfish-model</module>
         <module>inkfish-service</module>
+        <module>inkfish-web</module>
     </modules>
 
 
@@ -69,10 +70,22 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.0.7</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>

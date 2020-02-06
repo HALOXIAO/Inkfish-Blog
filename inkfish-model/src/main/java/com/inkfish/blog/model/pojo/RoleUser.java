@@ -1,10 +1,23 @@
 package com.inkfish.blog.model.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
+/**
+ * @author HALOXIAO
+ */
+@TableName("role_user")
 public class RoleUser {
+
+    @TableId(value = "id",type = IdType.AUTO)
     private Integer id;
 
+    @TableField("role_id")
     private Integer roleId;
 
+    @TableField("user_id")
     private Long userId;
 
 
