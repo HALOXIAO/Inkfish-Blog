@@ -1,9 +1,8 @@
-package com.inkfish.blog.service.manager;
+package com.inkfish.blog.web.manager;
 
 import com.google.common.collect.ImmutableList;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 

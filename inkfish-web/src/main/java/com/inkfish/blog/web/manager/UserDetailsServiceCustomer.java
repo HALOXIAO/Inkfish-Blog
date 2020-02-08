@@ -1,4 +1,4 @@
-package com.inkfish.blog.service.manager;
+package com.inkfish.blog.web.manager;
 
 import com.google.common.collect.ImmutableList;
 import com.inkfish.blog.model.pojo.User;

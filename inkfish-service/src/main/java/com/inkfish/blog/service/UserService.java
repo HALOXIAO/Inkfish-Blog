@@ -4,7 +4,7 @@ import com.inkfish.blog.mapper.RoleMapper;
 import com.inkfish.blog.mapper.RoleUserMapper;
 import com.inkfish.blog.mapper.UserMapper;
 import com.inkfish.blog.model.pojo.User;
-import com.inkfish.blog.web.exception.DBTransactionalException;
+import com.inkfish.blog.status.exception.DBTransactionalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
