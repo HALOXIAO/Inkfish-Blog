@@ -26,7 +26,7 @@ public class UserDetailsServiceCustomer implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userService.searchUserWithUsername(username);
         if (user == null) {
-            throw new UsernameNotFoundException("not user");
+            throw new UsernameNotFoundException("not this user");
         }
         List<String> roleName = userService.searchRolenameWithUsername(username);
         List<GrantedAuthority> list = new ArrayList<>();

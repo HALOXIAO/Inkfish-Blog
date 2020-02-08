@@ -1,12 +1,8 @@
 package com.inkfish.blog.web.config;
 
-import com.inkfish.blog.web.handle.LoginFallHandler;
-import com.inkfish.blog.web.handle.LoginSuccessHandler;
-import com.inkfish.blog.web.handle.LogoutSuccessHandlerImp;
-import com.inkfish.blog.web.handle.NoLoginHandler;
+import com.inkfish.blog.web.handle.*;
 import com.inkfish.blog.web.manager.UserDetailsServiceCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -14,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 /**
  * @author HALOXIAO
@@ -42,6 +39,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new NoLoginHandler();
     }
 
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new AccessDeniedHandlerImp();
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -51,4 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests().antMatchers("/login","/logout").permitAll();
     }
+
+
+
 }
