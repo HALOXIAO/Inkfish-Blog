@@ -14,10 +14,6 @@
     <artifactId>inkfish-mapper</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
-    <properties>
-        <java.version>1.8</java.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.inkfish</groupId>
@@ -30,6 +26,11 @@
             <artifactId>inkfish-model</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+        <!--        MapStruct-->
+
+
+        <!--        MapStruct-->
 
     </dependencies>
 

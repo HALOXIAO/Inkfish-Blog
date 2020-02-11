@@ -4,7 +4,7 @@ import com.inkfish.blog.mapper.RoleMapper;
 import com.inkfish.blog.mapper.RoleUserMapper;
 import com.inkfish.blog.mapper.UserMapper;
 import com.inkfish.blog.model.pojo.User;
-import com.inkfish.blog.status.exception.DBTransactionalException;
+import com.inkfish.blog.common.exception.DBTransactionalException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,12 +38,34 @@ public class UserService {
         return true;
     }
 
-    public User searchUserWithUsername(String username) {
-        return userMapper.searchUserWithName(username);
+    @Transactional(rollbackFor = DBTransactionalException.class)
+    public boolean addUser(User user){
+        String rolename = "ROLE_NORMAL";
+        if (!userMapper.addUser(user) || !roleUserMapper.addUserRole(user.getUsername(), rolename)) {
+            DBTransactionalException exception = new DBTransactionalException("添加用户发生异常");
+            log.error(exception.getMessage());
+            throw exception;
+        }
+        return true;
     }
+
 
     public List<String> searchRolenameWithUsername(String username) {
         return userMapper.searchRolenameWithUsername(username);
+    }
+
+    public List<String> searchRolenameWithEmail(String email) {
+        return userMapper.searchRolenameWithEmail(email);
+    }
+
+    public String searchUserPasswordWithUsername(String username) {
+        User user = userMapper.searchUserPasswordWithUsername(username);
+        return user == null ? null : user.getPassword();
+    }
+
+    public String searchUserPasswordWithEmail(String email) {
+        User user = userMapper.searchUserPasswordWithEmail(email);
+        return user == null ? null : user.getPassword();
     }
 
 

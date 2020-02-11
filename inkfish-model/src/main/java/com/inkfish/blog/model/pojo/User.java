@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  */
 @TableName("user")
 public class User {
-    @TableId(value = "id",type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @TableField("username")
@@ -20,14 +20,21 @@ public class User {
     @TableField("password")
     private String password;
 
+    @TableField("email")
+    private String email;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public Long getId() {
         return this.id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return this.username;
@@ -51,6 +58,7 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
 }

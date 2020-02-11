@@ -17,19 +17,28 @@ public class UserMapper {
     @Autowired
     UserMapperInterface userMapperInterface;
 
-    public boolean addUser(User user){
-        return userMapperInterface.insert(user)==1;
+    public boolean addUser(User user) {
+        return userMapperInterface.insert(user) == 1;
     }
 
-    public User searchUserWithName(String name){
-        return userMapperInterface.selectOne(
-                new QueryWrapper<User>().eq("username",name)
-        );
-    }
 
-    public List<String>searchRolenameWithUsername(String username){
+    public List<String> searchRolenameWithUsername(String username) {
         return userMapperInterface.searchRolenameWithUsername(username);
     }
+    public List<String> searchRolenameWithEmail(String email){
+        return userMapperInterface.searchRolenameWithEmail(email);
+    }
+
+
+    public User searchUserPasswordWithUsername(String username) {
+        return userMapperInterface.selectOne(new QueryWrapper<User>().select("password").eq("username", username));
+
+    }
+
+    public User searchUserPasswordWithEmail(String email){
+        return userMapperInterface.selectOne(new QueryWrapper<User>().select("password").eq("email",email));
+    }
+
 
 
 }

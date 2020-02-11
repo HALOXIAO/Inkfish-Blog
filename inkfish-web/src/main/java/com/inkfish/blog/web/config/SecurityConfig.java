@@ -5,10 +5,13 @@ import com.inkfish.blog.web.manager.UserDetailsServiceCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 
@@ -28,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     LogoutSuccessHandlerImp logoutSuccessHandlerImp;
 
+    @Autowired
+    UserDetailsService userDetailsService;
+
     @Override
     @Bean
     public UserDetailsService userDetailsService() {
@@ -46,13 +52,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.logout().logoutSuccessUrl("/logout").logoutSuccessHandler(logoutSuccessHandlerImp)
+        http.logout().logoutUrl("/logout").permitAll().logoutSuccessHandler(logoutSuccessHandlerImp)
                 .and()
-                .formLogin().loginProcessingUrl("/login").successHandler(loginSuccessHandler).failureHandler(loginFallHandler)
+                .formLogin().loginPage("/login").permitAll().successHandler(loginSuccessHandler).failureHandler(loginFallHandler)
                 .and()
-                .authorizeRequests().antMatchers("/login","/logout").permitAll();
+                .csrf().disable().authorizeRequests().antMatchers("/login","/logout","/register","/verification").permitAll();
+
     }
 
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService);
+    }
 
+    //TODO 生产环境更改
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder(20);
+//        return NoOpPasswordEncoder.getInstance();
+    }
 
 }

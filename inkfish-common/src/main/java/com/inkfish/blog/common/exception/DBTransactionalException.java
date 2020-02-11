@@ -1,4 +1,4 @@
-package com.inkfish.blog.status.exception;
+package com.inkfish.blog.common.exception;
 
 /**
  * @author HALOXIAO

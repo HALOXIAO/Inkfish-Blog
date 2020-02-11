@@ -1,7 +1,6 @@
-package com.inkfish.blog.status;
+package com.inkfish.blog.common;
 
 
-import com.inkfish.blog.status.RESULT_BEAN_STATUS_CODE;
 import lombok.Data;
 
 /**

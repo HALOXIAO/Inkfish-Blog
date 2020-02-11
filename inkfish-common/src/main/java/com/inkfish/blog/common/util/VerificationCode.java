@@ -1,4 +1,4 @@
-package com.inkfish.blog.web.config;
+package com.inkfish.blog.common.util;
 
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.impl.DefaultKaptcha;

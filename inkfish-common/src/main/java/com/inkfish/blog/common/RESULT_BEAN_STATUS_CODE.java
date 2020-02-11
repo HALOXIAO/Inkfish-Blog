@@ -1,4 +1,4 @@
-package com.inkfish.blog.status;
+package com.inkfish.blog.common;
 
 public enum RESULT_BEAN_STATUS_CODE {
 

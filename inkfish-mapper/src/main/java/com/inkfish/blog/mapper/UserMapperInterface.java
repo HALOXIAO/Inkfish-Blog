@@ -16,7 +16,11 @@ import java.util.List;
 public interface UserMapperInterface extends BaseMapper<User> {
 
 
-    @Select("SELECT role FROM role WHERE id=(SELECT `role_id` FROM role_user WHERE user_id=(SELECT `id` FROM `user` WHERE username=#{username}))")
+    @Select("SELECT role FROM role WHERE EXISTS (SELECT `role_id` FROM role_user WHERE user_id=(SELECT `id` FROM `user` WHERE username=#{username}))")
     List<String> searchRolenameWithUsername(@Param("username") String name);
+
+
+    @Select("SELECT role FROM role WHERE EXISTS(SELECT `role_id` FROM role_user WHERE user_id=(SELECT `id` FROM `user` WHERE email=#{email}))")
+    List<String> searchRolenameWithEmail(@Param("email") String email);
 
 }
