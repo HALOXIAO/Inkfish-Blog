@@ -18,7 +18,7 @@ public class RoleUser {
     private Integer roleId;
 
     @TableField("user_id")
-    private Long userId;
+    private Integer userId;
 
 
     public Integer getId() {
@@ -37,11 +37,11 @@ public class RoleUser {
         this.roleId = roleId;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return this.userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

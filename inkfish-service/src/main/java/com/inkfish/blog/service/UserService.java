@@ -1,8 +1,10 @@
 package com.inkfish.blog.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.inkfish.blog.mapper.RoleMapper;
 import com.inkfish.blog.mapper.RoleUserMapper;
 import com.inkfish.blog.mapper.UserMapper;
+import com.inkfish.blog.mapper.UserDao;
 import com.inkfish.blog.model.pojo.User;
 import com.inkfish.blog.common.exception.DBTransactionalException;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +19,7 @@ import java.util.List;
  **/
 @Service
 @Slf4j
-public class UserService {
+public class UserService extends ServiceImpl<UserDao,User> {
 
     @Autowired
     UserMapper userMapper;
@@ -27,6 +29,7 @@ public class UserService {
 
     @Autowired
     RoleUserMapper roleUserMapper;
+
 
     @Transactional(rollbackFor = DBTransactionalException.class)
     public boolean addUser(User user, String rolename) {
@@ -67,6 +70,5 @@ public class UserService {
         User user = userMapper.searchUserPasswordWithEmail(email);
         return user == null ? null : user.getPassword();
     }
-
 
 }

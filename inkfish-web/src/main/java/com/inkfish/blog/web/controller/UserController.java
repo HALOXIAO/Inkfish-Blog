@@ -23,6 +23,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -86,9 +87,9 @@ public class UserController {
     }
 
     @PostMapping("/getpass")
-    public ResultBean<String> forgetPassword(String email){
+    public ResultBean<String> forgetPassword(@Valid @RequestBody @Email String email,BindingResult bindingResult){
+
         return null;
     }
-
 
 }

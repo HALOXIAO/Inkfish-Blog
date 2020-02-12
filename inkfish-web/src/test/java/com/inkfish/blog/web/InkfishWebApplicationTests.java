@@ -1,26 +1,28 @@
 package com.inkfish.blog.web;
 
-import com.inkfish.blog.service.EmailService;
+import com.inkfish.blog.mapper.UserMapper;
+import com.inkfish.blog.model.pojo.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
 @SpringBootTest
 @Component
-class InkfishWebApplicationTests {
+class InkfishWebApplicationTests  {
+
 
     @Autowired
-    EmailService emailService;
+    UserMapper userMapper;
 
     @Test
     void contextLoads() {
-        Context context = new Context();
-        TemplateEngine templateEngine = new TemplateEngine();
-        String emailContext = templateEngine.process("Register",context);
-        System.out.println(emailContext);
+
+
+        /*        LocalDateTime time = LocalDateTime.now();
+        Timestamp timestamp = Timestamp.valueOf(time);
+        articleMapperInterface.addArticle("helo", true, 1, 1, "asdawd", timestamp);
+        System.out.println(articleMapperInterface.getLstId());*/
     }
 
 }

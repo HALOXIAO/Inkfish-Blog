@@ -1,6 +1,7 @@
 package com.inkfish.blog.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.inkfish.blog.model.pojo.Role;
 import com.inkfish.blog.model.pojo.RoleUser;
 import com.inkfish.blog.model.pojo.User;
@@ -11,29 +12,28 @@ import org.springframework.stereotype.Component;
  * @author HALOXIAO
  **/
 @Component
-public class RoleUserMapper {
+public class RoleUserMapper extends ServiceImpl<RoleUserDao, RoleUser> {
+
 
     @Autowired
-    RoleUserMapperInterface roleUserMapperInterface;
+    UserDao userDao;
 
     @Autowired
-    UserMapperInterface userMapperInterface;
-
-    @Autowired
-    RoleMapperInterface roleMapperInterface;
+    RoleDao roleDao;
 
     public boolean addUserRole(String username, String rolename) {
         RoleUser roleUser = new RoleUser();
-        User user = userMapperInterface.selectOne(new QueryWrapper<User>().select("id").
+        User user = userDao.selectOne(new QueryWrapper<User>().select("id").
                 eq("username", username));
-        Role role = roleMapperInterface.selectOne(new QueryWrapper<Role>().select("id").
+        Role role = roleDao.selectOne(new QueryWrapper<Role>().select("id").
                 eq("role", rolename));
         if (null != user && null != role) {
             roleUser.setRoleId(role.getId());
             roleUser.setUserId(user.getId());
-            return roleUserMapperInterface.insert(roleUser) == 1;
+            return save(roleUser);
         }
         return false;
     }
+
 
 }

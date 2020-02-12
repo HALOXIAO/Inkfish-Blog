@@ -1,7 +1,7 @@
 package com.inkfish.blog.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.inkfish.blog.model.pojo.Role;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.inkfish.blog.model.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,31 +12,37 @@ import java.util.List;
  * @author HALOXIAO
  **/
 @Component
-public class UserMapper {
+public class UserMapper extends ServiceImpl<UserDao,User> {
 
     @Autowired
-    UserMapperInterface userMapperInterface;
+    RoleUserMapper roleUserMapper;
+
+    @Override
+    public UserDao getBaseMapper() {
+        return super.getBaseMapper();
+    }
 
     public boolean addUser(User user) {
-        return userMapperInterface.insert(user) == 1;
+        return save(user);
     }
 
 
     public List<String> searchRolenameWithUsername(String username) {
-        return userMapperInterface.searchRolenameWithUsername(username);
+
+        return getBaseMapper().searchRolenameWithUsername(username);
     }
     public List<String> searchRolenameWithEmail(String email){
-        return userMapperInterface.searchRolenameWithEmail(email);
+        return getBaseMapper().searchRolenameWithEmail(email);
     }
 
 
     public User searchUserPasswordWithUsername(String username) {
-        return userMapperInterface.selectOne(new QueryWrapper<User>().select("password").eq("username", username));
+        return getOne(new QueryWrapper<User>().select("password").eq("username", username));
 
     }
 
     public User searchUserPasswordWithEmail(String email){
-        return userMapperInterface.selectOne(new QueryWrapper<User>().select("password").eq("email",email));
+        return getOne(new QueryWrapper<User>().select("password").eq("email",email));
     }
 
 
