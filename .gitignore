@@ -1,0 +1,24 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+
+out
+gen
+inkfish-common/target/
+inkfish-mapper/src/main/resources/rebel-remote.xml
+inkfish-mapper/target/
+inkfish-model/src/main/java/com/inkfish/blog/model/bo/
+inkfish-model/src/main/resources/rebel-remote.xml
+inkfish-model/target/
+inkfish-service/src/main/resources/emailTemplate/
+inkfish-service/target/
+inkfish-web/target/
+target/
+!/src/
+/inkfish-mapper/src/main/resources/
+/inkfish-model/src/main/resources/
+/inkfish-common/src/main/resources/
