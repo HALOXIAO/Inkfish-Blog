@@ -20,9 +20,13 @@ public class Article {
     @TableField( "category_id")
     private Integer categoryId;
 
+    @TableField("overview")
+    private String overview;
 
     @TableField( "status")
     private Integer status;
+
+
 
     @TableField( "content")
     private String content;
@@ -39,6 +43,14 @@ public class Article {
 
     public void setEnableComment(Boolean enableComment) {
         this.enableComment = enableComment;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
     }
 
     public Integer getStatus() {
@@ -107,6 +119,7 @@ public class Article {
                 ", title='" + title + '\'' +
                 ", enableComment=" + enableComment +
                 ", categoryId=" + categoryId +
+                ", overview='" + overview + '\'' +
                 ", status=" + status +
                 ", content='" + content + '\'' +
                 ", createTime=" + createTime +

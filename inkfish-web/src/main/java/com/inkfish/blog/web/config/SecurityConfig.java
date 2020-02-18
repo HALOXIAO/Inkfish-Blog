@@ -65,10 +65,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService);
     }
 
-    //TODO 生产环境更改
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(20);
+        return new BCryptPasswordEncoder();
 //        return NoOpPasswordEncoder.getInstance();
     }
 

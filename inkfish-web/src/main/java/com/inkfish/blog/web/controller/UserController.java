@@ -62,11 +62,13 @@ public class UserController {
         }
         User user = RegisterToUser.INSTANCE.from(register);
         log.info(register.toString());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        String password = user.getPassword();
+        String Epassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(Epassword);
         if (userService.addUser(user)) {
             return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         }
-        return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+        return new ResultBean<>("register fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
     }
 
     @GetMapping("/verification")
@@ -87,7 +89,7 @@ public class UserController {
     }
 
     @PostMapping("/getpass")
-    public ResultBean<String> forgetPassword(@Valid @RequestBody @Email String email,BindingResult bindingResult){
+    public ResultBean<String> forgetPassword(@Valid @RequestBody @Email String email, BindingResult bindingResult) {
 
         return null;
     }

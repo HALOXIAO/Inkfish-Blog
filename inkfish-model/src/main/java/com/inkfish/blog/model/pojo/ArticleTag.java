@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
 
 @TableName("article_tag")
 public class ArticleTag  {
@@ -15,8 +14,7 @@ public class ArticleTag  {
     @TableField("name")
     private String name;
 
-    @TableField("status")
-    private Integer status;
+
 
 
     public Integer getId() {
@@ -35,20 +33,13 @@ public class ArticleTag  {
         this.name = name;
     }
 
-    public Integer getStatus() {
-        return this.status;
-    }
 
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
     @Override
     public String toString() {
         return "ArticleTag{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", status=" + status +
                 '}';
     }
 }

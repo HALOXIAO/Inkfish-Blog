@@ -31,9 +31,9 @@ public class ResultBean<T> {
         super();
     }
 
-    public ResultBean(T data, RESULT_BEAN_STATUS_CODE code) {
+    public ResultBean(String msg, RESULT_BEAN_STATUS_CODE code) {
         super();
-        this.data = data;
+        this.msg = msg;
         this.code = code.getValue();
     }
 
