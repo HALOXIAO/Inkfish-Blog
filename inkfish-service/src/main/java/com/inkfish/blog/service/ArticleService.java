@@ -6,11 +6,13 @@ import com.inkfish.blog.mapper.ArticleTagMapper;
 import com.inkfish.blog.mapper.ArticleTagRelationMapper;
 import com.inkfish.blog.model.pojo.Article;
 import com.inkfish.blog.model.pojo.ArticleTag;
+import com.inkfish.blog.service.manager.ImageManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -21,13 +23,16 @@ import java.util.List;
 public class ArticleService {
 
     @Autowired
-    ArticleMapper articleMapper;
+    private ArticleMapper articleMapper;
 
     @Autowired
-    ArticleTagRelationMapper articleTagRelationMapper;
+    private ArticleTagRelationMapper articleTagRelationMapper;
 
     @Autowired
-    ArticleTagMapper articleTagMapper;
+    private ArticleTagMapper articleTagMapper;
+
+    @Autowired
+    ImageManager imageManager;
 
     public boolean addArticle(Article article) {
         return articleMapper.save(article);
@@ -47,9 +52,16 @@ public class ArticleService {
         throw e;
     }
 
-
-
-
+    @Transactional(rollbackFor = DBTransactionalException.class)
+    public void deleteArticleById(Integer id) throws IOException {
+        if (articleMapper.removeById(id)) {
+            imageManager.deleteImage(id);
+            return;
+        }
+        DBTransactionalException e = new DBTransactionalException("删除Image失败");
+        log.error(e.getMessage());
+        throw e;
+    }
 
 
 }

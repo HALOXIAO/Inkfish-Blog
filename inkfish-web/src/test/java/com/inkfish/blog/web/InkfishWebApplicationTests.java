@@ -8,8 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 @SpringBootTest
@@ -23,11 +24,12 @@ class InkfishWebApplicationTests {
     @Autowired
     ArticleTagRelationMapper mapper;
 
-
+    //        -123678913-1233241
     @Test
-    void contextLoads()throws IOException {
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");//设置日期格式
-        String newsNo = LocalDateTime.now().format(fmt);
-        System.out.println(newsNo);
+    void contextLoads() throws IOException {
+        Path path = Paths.get("../../../hahaha");
+        System.out.println("-123678913-1233241".indexOf("-"));
+        System.out.println(         "-123678913-1233241".lastIndexOf("-"));
+        System.out.println("-123678913-1233241".substring(0,10));
     }
 }
