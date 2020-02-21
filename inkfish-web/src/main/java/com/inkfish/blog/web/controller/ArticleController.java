@@ -5,6 +5,7 @@ import com.inkfish.blog.common.ResultBean;
 import com.inkfish.blog.mapper.convert.ArticlePushToArticle;
 import com.inkfish.blog.model.front.ArticlePush;
 import com.inkfish.blog.model.pojo.Article;
+import com.inkfish.blog.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.service.ArticleService;
 import com.inkfish.blog.service.CategoryService;
 import com.inkfish.blog.service.manager.ImageManager;
@@ -79,7 +80,6 @@ public class ArticleController {
 
     }
 
-
     @PostMapping("/articleImage")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<String>> uploadImage(@RequestParam("file") List<MultipartFile> files, String title, Integer id) {
@@ -96,5 +96,22 @@ public class ArticleController {
         bean.setData(path);
         return bean;
     }
+
+    @GetMapping("/home")
+    @PreAuthorize("hasAnyRole('ROOLE_ROOT')")
+    public ResultBean<List<ArticleOverviewVO>> getArticle(Integer page, Integer size) {
+        List<ArticleOverviewVO> list = articleService.getArticleOverviewPage(page, size);
+        ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        bean.setData(list);
+        return bean;
+    }
+
+/*
+* SELECT name FROM article_tag WHERE id INNER IN (
+SELECT tag_id FROM article_and_tag_relation WHERE article_id INNER IN(
+SELECT id FROM article WHERE id = 14 OR id=15
+	)
+)
+* */
 
 }
