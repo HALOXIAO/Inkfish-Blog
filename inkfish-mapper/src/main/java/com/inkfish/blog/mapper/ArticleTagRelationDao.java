@@ -7,6 +7,7 @@ import com.inkfish.blog.model.pojo.ArticleTag;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.InsertProvider;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,5 +18,5 @@ import java.util.List;
 @Mapper
 public interface ArticleTagRelationDao extends BaseMapper<ArticleAndTagRelation> {
     @InsertProvider(type =ArticleTagRelationMapper.class,method = "addArticleTagRelationProvider")
-    public boolean addArticleTagRelation(Integer articleId, List<ArticleTag>tagNames);
+    public boolean addArticleTagRelation(@Param("id") Integer articleId,@Param("tags") List<ArticleTag>tagNames);
 }

@@ -98,7 +98,7 @@ public class ArticleController {
     }
 
     @GetMapping("/home")
-    @PreAuthorize("hasAnyRole('ROOLE_ROOT')")
+    @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<ArticleOverviewVO>> getArticle(Integer page, Integer size) {
         List<ArticleOverviewVO> list = articleService.getArticleOverviewPage(page, size);
         ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);

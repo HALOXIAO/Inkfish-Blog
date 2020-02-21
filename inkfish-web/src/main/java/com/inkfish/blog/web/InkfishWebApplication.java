@@ -3,6 +3,7 @@ package com.inkfish.blog.web;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -15,7 +16,7 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = {"com.inkfish.blog"})
 @SpringBootApplication
 @MapperScan("com.inkfish.blog")
-public class InkfishWebApplication {
+public class InkfishWebApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         SpringApplication.run(InkfishWebApplication.class, args);

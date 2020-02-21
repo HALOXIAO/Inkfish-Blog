@@ -21,5 +21,5 @@ public interface ArticleTagDao extends BaseMapper<ArticleTag> {
             @Result(property = "name", column = "name"),
             @Result(property = "article_id", column = "articleId")
     })
-    List<TagAndArticleDTO> getTagAndArticleDTO(List<Integer> id);
+    List<TagAndArticleDTO> getTagAndArticleDTO(@Param("idList")List<Integer> id);
 }

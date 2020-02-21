@@ -7,6 +7,7 @@ import org.apache.ibatis.jdbc.SQL;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author HALOXIAO
@@ -14,23 +15,28 @@ import java.util.List;
 @Component
 public class ArticleTagRelationMapper extends ServiceImpl<ArticleTagRelationDao, ArticleAndTagRelation> {
 
-    public String addArticleTagRelationProvider(final Integer articleId, final List<ArticleTag> tags) {
 
-       return new SQL() {
-           {
-               StringBuffer builder = new StringBuffer(tags.size());
-
-               INSERT_INTO("article_and_tag_relation (article_id,tag_id)");
-               tags.parallelStream().forEach(
-                       p->{
-                        INTO_VALUES(articleId.toString(),p.getName());
-                        ADD_ROW();
-                      }
-               );
-           }
+    public String addArticleTagRelationProvider(Map<String, Object> map) {
+        Integer articleId = (Integer) map.get("id");
+        List<ArticleTag> tags = (List<ArticleTag>) map.get("tags");
+        //INSERT INTO article_and_tag_relation (article_id,tag_id) SELECT 15,id FROM article_tag WHERE id=4
+        return new SQL() {
+            {
+                INSERT_INTO("article_and_tag_relation (article_id,tag_id)");
+                StringBuffer buffer = new StringBuffer("SELECT ");
+                buffer.append(articleId).append(",id FROM article_tag WHERE name IN (");
+                tags.parallelStream().forEach(
+                        p -> {
+                            buffer.append(p.getName()).append(",");
+                        }
+                );
+                buffer.deleteCharAt(buffer.lastIndexOf(","));
+                buffer.append(")");
+                INTO_COLUMNS(buffer.toString());
+            }
 
         }.toString();
-
     }
-
 }
+
+
