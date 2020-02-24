@@ -18,8 +18,8 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 /**
  * @author HALOXIAO
  **/
-@Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -50,11 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new AccessDeniedHandlerImp();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-//        return NoOpPasswordEncoder.getInstance();
-    }
+
 
 
     @Override
