@@ -80,6 +80,7 @@ public class ArticleController {
 
     }
 
+
     @PostMapping("/articleImage")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<String>> uploadImage(@RequestParam("file") List<MultipartFile> files, String title, Integer id) {
