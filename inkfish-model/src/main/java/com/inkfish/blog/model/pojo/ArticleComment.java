@@ -5,29 +5,47 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
 @TableName("article_comment")
 public class ArticleComment {
+
+    @Null
     @TableId("id")
     private Integer id;
 
+    @NotNull
     @TableField("user_id")
     private Integer userId;
 
+    @TableField("username")
+    private  String username;
+
+    @NotNull
     @TableField("article_id")
     private Integer articleId;
 
+    @NotNull
     @TableField("comment_body")
     private String commentBody;
 
+    @Null
     @TableField("comment_create_time")
     private java.sql.Timestamp commentCreateTime;
 
-    @TableField("status")
-    private Integer status;
 
+    @Null
     @TableField("url")
     private String url;
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
     public Integer getId() {
         return this.id;
@@ -69,13 +87,7 @@ public class ArticleComment {
         this.commentCreateTime = commentCreateTime;
     }
 
-    public Integer getStatus() {
-        return this.status;
-    }
 
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
     public String getUrl() {
         return this.url;
@@ -90,10 +102,10 @@ public class ArticleComment {
         return "ArticleComment{" +
                 "id=" + id +
                 ", userId=" + userId +
+                ", username='" + username + '\'' +
                 ", articleId=" + articleId +
                 ", commentBody='" + commentBody + '\'' +
                 ", commentCreateTime=" + commentCreateTime +
-                ", status=" + status +
                 ", url='" + url + '\'' +
                 '}';
     }

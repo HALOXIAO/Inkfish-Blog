@@ -87,16 +87,18 @@ public class ArticleService {
             int index = Collections.<TagAndArticleDTO>binarySearch(tagAndArticleDTOList, dto);
             int base = index;
             List<String> tags = new LinkedList<>();
-            while (tagAndArticleDTOList.get(base + 1) != null && tagAndArticleDTOList.get(base + 1).getArticleId().equals(
-                    dto.getArticleId())) {
-                tags.add(tagAndArticleDTOList.get(base + 1).getNames());
-                base++;
-            }
-            base = index;
-            while (tagAndArticleDTOList.get(base - 1) != null && tagAndArticleDTOList.get(base - 1).getArticleId().equals(
-                    dto.getArticleId())) {
-                tags.add(tagAndArticleDTOList.get(base - 1).getNames());
-                base--;
+            if (tagAndArticleDTOList.size() != 0) {
+                while (base + 1 != tagAndArticleDTOList.size() && tagAndArticleDTOList.get(base + 1) != null && tagAndArticleDTOList.get(base + 1).getArticleId().equals(
+                        dto.getArticleId())) {
+                    tags.add(tagAndArticleDTOList.get(base + 1).getNames());
+                    base++;
+                }
+                base = index;
+                while (-1 != base - 1 && tagAndArticleDTOList.get(base - 1) != null && tagAndArticleDTOList.get(base - 1).getArticleId().equals(
+                        dto.getArticleId())) {
+                    tags.add(tagAndArticleDTOList.get(base - 1).getNames());
+                    base--;
+                }
             }
             p.setTags(tags);
         });

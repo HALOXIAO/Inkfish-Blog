@@ -27,7 +27,7 @@ public class ImageManager {
     @Autowired
     ArticleMapper articleMapper;
 
-    private static final String imageDirName = "../../Image/";
+    private static final String imageDirName = "../../Image";
 
     public String addImage(MultipartFile file, String title, Integer id) throws IOException {
         if (id != null) {
@@ -38,12 +38,12 @@ public class ImageManager {
         String timeId = LocalDateTime.now().format(fmt);
         String code = Integer.toString(title.hashCode());
         StringBuffer buffer = new StringBuffer();
-        buffer.append(imageDirName).append(code).append("-")
+        buffer.append(imageDirName).append("/").append(code).append("-")
                 .append(timeId);
         File storeFile = new File(buffer.toString());
         if (!storeFile.exists()) {
             flag = storeFile.mkdirs();
-        }else{
+        } else {
             storeFile.delete();
         }
         if (!flag) {
@@ -52,10 +52,10 @@ public class ImageManager {
             throw e;
         }
         String imageId = LocalDateTime.now().format(fmt);
-        buffer.append("/").append(imageId).append(file.getContentType());
+        buffer.append("/").append(imageId).append("-").append(file.getOriginalFilename());
         Files.createFile(Paths.get(buffer.toString()));
         file.transferTo(Paths.get(buffer.toString()));
-        return code + "-" + timeId + "." + file.getContentType();
+        return code + "-" + timeId + "/" + imageId + "-" + (file.getOriginalFilename());
     }
 
     public void deleteImage(Integer id) throws IOException {
@@ -64,7 +64,7 @@ public class ImageManager {
         if (file.list() != null) {
             for (String name : file.list()) {
                 if (name.substring(0, name.lastIndexOf("-")).equals(oldTitle)) {
-                    Files.delete(Paths.get(imageDirName + name));
+                    Files.delete(Paths.get(imageDirName + "/" + name));
                 }
             }
         }

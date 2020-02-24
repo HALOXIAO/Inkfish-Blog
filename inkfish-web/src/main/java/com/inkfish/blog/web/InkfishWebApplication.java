@@ -23,10 +23,18 @@ public class InkfishWebApplication extends SpringBootServletInitializer {
     }
 
     @Bean
-    public PlatformTransactionManager transactionManager(DataSource dataSource){
+    public PlatformTransactionManager transactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
-
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory(){
+//        return new LettuceConnectionFactory();
+//    }
+//
+//    @Bean
+//    public RedisHttpSessionConfiguration redisHttpSessionConfiguration(){
+//        return new RedisHttpSessionConfiguration();
+//    }
 
 }

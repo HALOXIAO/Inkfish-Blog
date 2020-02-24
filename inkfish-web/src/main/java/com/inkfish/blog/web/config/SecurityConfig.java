@@ -50,6 +50,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new AccessDeniedHandlerImp();
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+//        return NoOpPasswordEncoder.getInstance();
+    }
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.logout().logoutUrl("/logout").permitAll().logoutSuccessHandler(logoutSuccessHandlerImp)
@@ -57,7 +64,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().loginPage("/login").permitAll().successHandler(loginSuccessHandler).failureHandler(loginFallHandler)
                 .and()
                 .csrf().disable().authorizeRequests().antMatchers("/login","/logout","/register","/verification").permitAll();
-
     }
 
     @Override
@@ -65,10 +71,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService);
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-//        return NoOpPasswordEncoder.getInstance();
-    }
 
 }
