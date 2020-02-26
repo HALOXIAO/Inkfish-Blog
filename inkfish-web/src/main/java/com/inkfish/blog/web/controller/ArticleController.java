@@ -101,6 +101,10 @@ public class ArticleController {
     @GetMapping("/home")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<ArticleOverviewVO>> getArticle(Integer page, Integer size) {
+        if (page == null || size == null || page <= 0 || size < 0) {
+            return new ResultBean<>("argument error", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+        }
+        page --;
         List<ArticleOverviewVO> list = articleService.getArticleOverviewPage(page, size);
         ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         bean.setData(list);

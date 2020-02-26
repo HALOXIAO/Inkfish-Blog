@@ -1,13 +1,17 @@
 package com.inkfish.blog.model.pojo;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import javax.validation.constraints.Null;
+
 @TableName("comment_reply")
 public class CommentReply {
-    @TableId("id")
+    @Null
+    @TableId( value = "id",type = IdType.AUTO)
     private Integer id;
 
     @TableField("username")
@@ -21,6 +25,17 @@ public class CommentReply {
 
     @TableField("target_id")
     private Integer targetId;
+
+    @TableField
+    private String targetName;
+
+    public String getTargetName() {
+        return targetName;
+    }
+
+    public void setTargetName(String targetName) {
+        this.targetName = targetName;
+    }
 
     public String getUsername() {
         return username;
@@ -70,6 +85,7 @@ public class CommentReply {
                 ", commentId=" + commentId +
                 ", content='" + content + '\'' +
                 ", targetId=" + targetId +
+                ", targetName='" + targetName + '\'' +
                 '}';
     }
 }

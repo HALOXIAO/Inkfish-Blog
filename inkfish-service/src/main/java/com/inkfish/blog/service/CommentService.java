@@ -18,10 +18,14 @@ public class CommentService {
     ArticleCommentMapper articleCommentMapper;
 
 
-
     //TODO 可以改成WHERE的方式，这样耗时不会随着数据量的提升而提升
     public List<ArticleComment> getCommentWithPage(Integer articleId, Integer page, Integer size) {
-        return articleCommentMapper.getBaseMapper().getCommentPageWithArticle(articleId, page, size);
+        List<ArticleComment> lists = articleCommentMapper.getBaseMapper().getCommentPageWithArticle(articleId, page, size);
+        if(lists!= null){
+            lists.parallelStream().forEach(p->{p.setArticleId(articleId);});
+            return lists;
+        }
+        return null;
     }
 
     public Boolean addComment(ArticleComment articleComment) {

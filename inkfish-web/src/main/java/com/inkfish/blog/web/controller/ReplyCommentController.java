@@ -23,7 +23,7 @@ public class ReplyCommentController {
     @Autowired
     CommentReplyService commentReplyService;
 
-    @GetMapping("/article/reply/")
+    @GetMapping("/article/reply")
     public ResultBean<List<CommentReply>> getCommentReplyPage(Integer commentId, Integer page, Integer size) {
         if (page < 0 || size < 0) {
             return new ResultBean<>("argument error", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
@@ -33,7 +33,7 @@ public class ReplyCommentController {
         return bean;
     }
 
-    @PostMapping("/article/reply/")
+    @PostMapping("/article/reply")
     public ResultBean<Boolean> pushCommentReply(@RequestBody @Valid CommentReply commentReply, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             ResultBean<Boolean> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);

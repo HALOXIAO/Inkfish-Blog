@@ -1,6 +1,7 @@
 package com.inkfish.blog.model.pojo;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -12,7 +13,7 @@ import javax.validation.constraints.Null;
 public class ArticleComment {
 
     @Null
-    @TableId("id")
+    @TableId( value = "id",type = IdType.AUTO)
     private Integer id;
 
     @NotNull
@@ -33,7 +34,6 @@ public class ArticleComment {
     @Null
     @TableField("comment_create_time")
     private java.sql.Timestamp commentCreateTime;
-
 
     @Null
     @TableField("url")

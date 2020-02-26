@@ -15,7 +15,7 @@ public class Article {
     private String title;
 
     @TableField( "enable_comment")
-    private Boolean enableComment;
+    private Integer enableComment;
 
     @TableField( "category_id")
     private Integer categoryId;
@@ -37,11 +37,11 @@ public class Article {
     @TableField( "update_time")
     private java.sql.Timestamp updateTime;
 
-    public Boolean getEnableComment() {
+    public Integer getEnableComment() {
         return enableComment;
     }
 
-    public void setEnableComment(Boolean enableComment) {
+    public void setEnableComment(Integer enableComment) {
         this.enableComment = enableComment;
     }
 

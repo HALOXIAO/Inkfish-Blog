@@ -16,9 +16,7 @@ public class ArticlePush {
     @NotNull
     @Max(1)
     @Min(0)
-    private Boolean enableComment;
-
-
+    private Integer enableComment;
 
     @NotNull
     @Length(min = 1,max = 20)
@@ -48,11 +46,11 @@ public class ArticlePush {
         this.title = title;
     }
 
-    public Boolean getEnableComment() {
+    public Integer getEnableComment() {
         return this.enableComment;
     }
 
-    public void setEnableComment(Boolean enableComment) {
+    public void setEnableComment(Integer enableComment) {
         this.enableComment = enableComment;
     }
 
@@ -86,5 +84,17 @@ public class ArticlePush {
 
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+    @Override
+    public String toString() {
+        return "ArticlePush{" +
+                "title='" + title + '\'' +
+                ", enableComment=" + enableComment +
+                ", categoryName='" + categoryName + '\'' +
+                ", overview='" + overview + '\'' +
+                ", status=" + status +
+                ", content='" + content + '\'' +
+                '}';
     }
 }

@@ -1,12 +1,11 @@
 package com.inkfish.blog.mapper.convert;
 
-        import com.inkfish.blog.model.front.Register;
-        import com.inkfish.blog.model.pojo.User;
-        import org.mapstruct.Mapper;
-        import org.mapstruct.Mapping;
-        import org.mapstruct.Mappings;
-        import org.mapstruct.factory.Mappers;
-        import org.springframework.stereotype.Component;
+import com.inkfish.blog.model.front.Register;
+import com.inkfish.blog.model.pojo.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
 /**
  * @author HALOXIAO

@@ -1,11 +1,11 @@
 package com.inkfish.blog.mapper;
 
-        import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-        import com.inkfish.blog.model.pojo.Article;
-        import org.apache.ibatis.annotations.Mapper;
-        import org.apache.ibatis.annotations.Select;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.inkfish.blog.model.pojo.Article;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
-        import java.util.List;
+import java.util.List;
 
 /**
  * @author HALOXIAO

@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
+//TODO 观看人数、点赞、OAUTH2.0 Github
+
+
 @EnableRedisHttpSession
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"com.inkfish.blog"})

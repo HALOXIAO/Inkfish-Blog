@@ -58,7 +58,7 @@ public class ArticleService {
         throw e;
     }
 
-    @Transactional(rollbackFor = DBTransactionalException.class)
+    @Transactional(rollbackFor = {DBTransactionalException.class,IOException.class})
     public void deleteArticleById(Integer id) throws IOException {
         if (articleMapper.removeById(id)) {
             imageManager.deleteImage(id);

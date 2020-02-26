@@ -62,9 +62,7 @@ public class UserController {
         }
         User user = RegisterToUser.INSTANCE.from(register);
         log.info(register.toString());
-        String password = user.getPassword();
-        String Epassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(Epassword);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (userService.addUser(user)) {
             return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         }

@@ -59,7 +59,11 @@ public class ImageManager {
     }
 
     public void deleteImage(Integer id) throws IOException {
-        String oldTitle = articleMapper.getOne(new QueryWrapper<Article>().select("title").eq("id", id.toString())).getTitle();
+        Article article = articleMapper.getOne(new QueryWrapper<Article>().select("title").eq("id", id.toString()));
+        if (article == null) {
+            return;
+        }
+        String oldTitle = article.getTitle();
         File file = new File(imageDirName + "/");
         if (file.list() != null) {
             for (String name : file.list()) {
