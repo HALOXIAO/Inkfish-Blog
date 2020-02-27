@@ -1,6 +1,6 @@
 package com.inkfish.email.config;
 
-        import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author HALOXIAO
@@ -8,4 +8,6 @@ package com.inkfish.email.config;
 
 @Configuration
 public class MqConfig {
+
+
 }

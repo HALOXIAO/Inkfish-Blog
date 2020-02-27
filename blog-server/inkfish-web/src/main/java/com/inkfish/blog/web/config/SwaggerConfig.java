@@ -43,16 +43,23 @@ public class SwaggerConfig {
                         new ResponseMessageBuilder().code(204).message("无").build(),
                         new ResponseMessageBuilder().code(401).message("无").build(),
                         new ResponseMessageBuilder().code(403).message("无").build()
-                ));
+                )).apiInfo(apiInfo());
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Inkfish Blog",
-                "欢迎来github点赞",
+                "欢迎来github Inkfish点赞 \n " +
+                        "关于ResultBean中Code的说明：\n" +
+                        "    NO_LOGIN(-1):未登录\n" +
+                        "    SUCCESS(0)：成功\n" +
+                        "    CHECK_FAIL(1)：匹配失败（例如账户密码匹配失败）\n" +
+                        "    NO_PERMISSION(2)：无权限\n" +
+                        "    UNKNOWN_EXCEPTION(-99)：未知异常\n" +
+                        "    ARGUMENT_EXCEPTION(3)：参数异常",
                 "API V1.0",
                 "",
-                "",
+                "HALOXIAO",
                 "",
                 ""
         );

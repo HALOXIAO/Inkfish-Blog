@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().loginPage("/login").permitAll().successHandler(loginSuccessHandler).failureHandler(loginFallHandler)
                 .and()
-                .csrf().disable().authorizeRequests().antMatchers("/login","/logout","/register","/verification").permitAll();
+                .csrf().disable().authorizeRequests().antMatchers("/login","/logout","/register","/verification","/home").permitAll();
     }
 
     @Override

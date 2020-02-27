@@ -11,6 +11,7 @@ import com.inkfish.blog.service.CategoryService;
 import com.inkfish.blog.service.manager.ImageManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,6 +49,7 @@ public class ArticleController {
     private HttpSession httpSession;
 
     @ApiOperation(value = "发布或更新文章")
+    @ApiResponse(code = 200,message = "有可能返回的Code：参数异常、成功、未知异常、未登录、无权限")
     @PostMapping("/article")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<Integer> publishArticle(@RequestBody @Valid ArticlePush articleP, BindingResult bindingResult) {
@@ -64,13 +66,14 @@ public class ArticleController {
         article.setCreateTime(Timestamp.valueOf(LocalDateTime.now()));
         if (!articleService.addArticle(article)) {
             log.warn("add article fail");
-            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
         }
         ResultBean<Integer> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         bean.setData(article.getId());
         return bean;
     }
 
+    @ApiResponse(code = 200,message = "有可能返回的Code：成功、未知异常、未登录、无权限")
     @DeleteMapping("/article")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<String> deleteArticle(Integer id) {
@@ -85,7 +88,8 @@ public class ArticleController {
     }
 
 
-    @ApiOperation(value = "上传图片",notes = "第一次上传时，id可以为空，返回为图片的地址")
+    @ApiOperation(value = "上传图片", notes = "第一次上传时，id可以为空，返回为图片的地址，图片的大小暂时限定在6MB以内")
+    @ApiResponse(code = 200,message = "有可能返回的Code：成功、未知异常、无权限、未登录")
     @PostMapping("/articleImage")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<String>> uploadImage(@RequestParam("file") List<MultipartFile> files, String title, Integer id) {
@@ -104,13 +108,14 @@ public class ArticleController {
     }
 
 
+    @ApiOperation(value = "首页信息", notes = "page为当前页数，最小为1，size为容量，最小为0")
+    @ApiResponse(code = 200,message = "有可能返回的Code：参数异常、成功、未知异常、未登录、")
     @GetMapping("/home")
-    @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<ArticleOverviewVO>> getArticle(Integer page, Integer size) {
         if (page == null || size == null || page <= 0 || size < 0) {
             return new ResultBean<>("argument error", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
-        page --;
+        page--;
         List<ArticleOverviewVO> list = articleService.getArticleOverviewPage(page, size);
         ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         bean.setData(list);

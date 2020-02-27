@@ -8,6 +8,8 @@ import com.inkfish.blog.mapper.convert.RegisterToUser;
 import com.inkfish.blog.model.front.Register;
 import com.inkfish.blog.model.pojo.User;
 import com.inkfish.blog.service.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -67,6 +69,8 @@ public class UserController {
     }
 
     @GetMapping("/verification")
+    @ApiOperation(value = "获取验证码，验证码的文本将放在Header中的'code'里，前端直接匹配即可")
+    @ApiResponse(code = 200,message = "返回的图像为jpg格式，有可能返回的Code：成功、未知异常")
     public void verificationCode(HttpServletResponse response) throws IOException {
         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
