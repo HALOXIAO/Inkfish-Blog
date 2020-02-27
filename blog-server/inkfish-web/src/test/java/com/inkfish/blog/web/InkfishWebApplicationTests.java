@@ -1,6 +1,8 @@
 package com.inkfish.blog.web;
 
 import com.inkfish.blog.mapper.ArticleCommentMapper;
+import com.inkfish.blog.mapper.RoleDao;
+import com.inkfish.blog.model.pojo.Role;
 import com.inkfish.blog.service.ArticleService;
 import com.inkfish.blog.service.CommentService;
 import org.junit.jupiter.api.Test;
@@ -16,16 +18,13 @@ import java.util.ArrayList;
 @Component
 class InkfishWebApplicationTests {
 
-
     @Autowired
-    ArticleService articleService;
+    RoleDao roleDao;
 
-    @Autowired
-    CommentService commentService;
 
     @Test
     void contextLoads() throws IOException {
-       System.out.println( commentService.getCommentWithPage(-1,1,1));
+
     }
 }
 

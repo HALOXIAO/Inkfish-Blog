@@ -7,10 +7,7 @@ import com.inkfish.blog.common.util.CodeVerification;
 import com.inkfish.blog.mapper.convert.RegisterToUser;
 import com.inkfish.blog.model.front.Register;
 import com.inkfish.blog.model.pojo.User;
-import com.inkfish.blog.service.EmailService;
 import com.inkfish.blog.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,8 +48,6 @@ public class UserController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @Autowired
-    EmailService emailService;
 
     //TODO Verification Code
     @PostMapping("/register")
