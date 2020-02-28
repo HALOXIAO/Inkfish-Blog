@@ -1,5 +1,6 @@
 package com.inkfish.blog.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.inkfish.blog.common.exception.DBTransactionalException;
 import com.inkfish.blog.mapper.ArticleMapper;
 import com.inkfish.blog.mapper.ArticleTagMapper;
@@ -39,6 +40,12 @@ public class ArticleService {
 
     @Autowired
     ImageManager imageManager;
+
+
+    public Article getArticle(Integer id){
+        return articleMapper.getOne(new QueryWrapper<Article>().select("title,overview,enable_comment,category_id,status," +
+                "content,create_time,update_time").eq("id",id));
+    }
 
     public boolean addArticle(Article article) {
         return articleMapper.save(article);

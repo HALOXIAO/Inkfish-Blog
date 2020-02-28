@@ -48,10 +48,23 @@ public class ArticleController {
     @Autowired
     private HttpSession httpSession;
 
+
+    @ApiOperation(value = "获取文章")
+    @ApiResponse(code = 200,message = "返回文章实体的所有信息")
+    @GetMapping("/article")
+    public ResultBean<Article> getArticle(@RequestParam(value = "id") Integer id) {
+        Article article = articleService.getArticle(id);
+        article.setId(id);
+        ResultBean<Article> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        bean.setData(article);
+        return bean;
+    }
+
     @ApiOperation(value = "发布或更新文章")
-    @ApiResponse(code = 200,message = "有可能返回的Code：参数异常、成功、未知异常、未登录、无权限")
+    @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、无权限")
     @PostMapping("/article")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
+
     public ResultBean<Integer> publishArticle(@RequestBody @Valid ArticlePush articleP, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             ResultBean<Integer> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
@@ -73,7 +86,7 @@ public class ArticleController {
         return bean;
     }
 
-    @ApiResponse(code = 200,message = "有可能返回的Code：成功、未知异常、未登录、无权限")
+    @ApiResponse(code = 200, message = "有可能返回的Code：成功、未知异常、未登录、无权限")
     @DeleteMapping("/article")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<String> deleteArticle(Integer id) {
@@ -89,7 +102,7 @@ public class ArticleController {
 
 
     @ApiOperation(value = "上传图片", notes = "第一次上传时，id可以为空，返回为图片的地址，图片的大小暂时限定在6MB以内")
-    @ApiResponse(code = 200,message = "有可能返回的Code：成功、未知异常、无权限、未登录")
+    @ApiResponse(code = 200, message = "有可能返回的Code：成功、未知异常、无权限、未登录")
     @PostMapping("/articleImage")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<String>> uploadImage(@RequestParam("file") List<MultipartFile> files, String title, Integer id) {
@@ -109,7 +122,7 @@ public class ArticleController {
 
 
     @ApiOperation(value = "首页信息", notes = "page为当前页数，最小为1，size为容量，最小为0")
-    @ApiResponse(code = 200,message = "有可能返回的Code：参数异常、成功、未知异常、未登录、")
+    @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、")
     @GetMapping("/home")
     public ResultBean<List<ArticleOverviewVO>> getArticle(Integer page, Integer size) {
         if (page == null || size == null || page <= 0 || size < 0) {

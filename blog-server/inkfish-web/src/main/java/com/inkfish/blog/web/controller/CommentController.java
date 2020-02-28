@@ -30,9 +30,10 @@ public class CommentController {
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     @GetMapping("/article/comment")
     public ResultBean<List<ArticleComment>> getAllComment(Integer articleId, Integer page, Integer size) {
-        if (page < 0 || size < 0) {
+        if (page == null || size ==null || page <= 0 || size < 0) {
             return new ResultBean<>("bad argument", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
+        page--;
         ResultBean<List<ArticleComment>> lists = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         lists.setData(commentService.getCommentWithPage(articleId, page, size));
         return lists;

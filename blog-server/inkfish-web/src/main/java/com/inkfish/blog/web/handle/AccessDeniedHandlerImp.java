@@ -5,6 +5,7 @@ import com.inkfish.blog.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.common.ResultBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import java.io.PrintWriter;
 /**
  * @author HALOXIAO
  **/
+@Component
 public class AccessDeniedHandlerImp implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {

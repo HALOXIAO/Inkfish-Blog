@@ -34,6 +34,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsService userDetailsService;
 
+    @Autowired
+    NoLoginHandler noLoginHandler;
+
+    @Autowired
+    AccessDeniedHandlerImp accessDeniedHandlerImp;
+
     @Override
     @Bean
     public UserDetailsService userDetailsService() {
@@ -45,13 +51,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new NoLoginHandler();
     }
 
-    @Bean
-    public AccessDeniedHandler accessDeniedHandler(){
-        return new AccessDeniedHandlerImp();
-    }
-
-
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -59,7 +58,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().loginPage("/login").permitAll().successHandler(loginSuccessHandler).failureHandler(loginFallHandler)
                 .and()
-                .csrf().disable().authorizeRequests().antMatchers("/login","/logout","/register","/verification","/home").permitAll();
+                .csrf().disable().authorizeRequests().antMatchers("/login", "/logout", "/register", "/verification", "/home").permitAll();
+        http.exceptionHandling().authenticationEntryPoint(noLoginHandler).accessDeniedHandler(accessDeniedHandlerImp);
     }
 
     @Override

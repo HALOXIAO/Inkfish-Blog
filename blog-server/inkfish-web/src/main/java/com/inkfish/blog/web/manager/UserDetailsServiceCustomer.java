@@ -28,8 +28,6 @@ public class UserDetailsServiceCustomer implements UserDetailsService {
     @Autowired
     UserService userService;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String usernameOrPhoneOrEmail) throws UsernameNotFoundException {
