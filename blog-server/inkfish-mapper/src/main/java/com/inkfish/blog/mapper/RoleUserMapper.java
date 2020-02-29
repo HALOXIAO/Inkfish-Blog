@@ -7,11 +7,12 @@ import com.inkfish.blog.model.pojo.RoleUser;
 import com.inkfish.blog.model.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 /**
  * @author HALOXIAO
  **/
-@Component
+@Repository
 public class RoleUserMapper extends ServiceImpl<RoleUserDao, RoleUser> {
 
 

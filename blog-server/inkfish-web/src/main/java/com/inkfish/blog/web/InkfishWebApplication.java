@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -21,6 +22,7 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = {"com.inkfish.blog"})
 @SpringBootApplication
 @MapperScan("com.inkfish.blog")
+@EnableAspectJAutoProxy
 public class InkfishWebApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {

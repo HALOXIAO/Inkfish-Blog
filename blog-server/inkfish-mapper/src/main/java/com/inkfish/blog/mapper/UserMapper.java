@@ -5,13 +5,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.inkfish.blog.model.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 /**
  * @author HALOXIAO
  **/
-@Component
+@Repository
 public class UserMapper extends ServiceImpl<UserDao,User> {
 
     @Autowired

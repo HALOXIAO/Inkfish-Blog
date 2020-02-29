@@ -1,13 +1,10 @@
-package com.inkfish.blog.web.handle;
+package com.inkfish.blog.web.handler.exceptionHandler;
 
 import com.inkfish.blog.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.common.ResultBean;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;

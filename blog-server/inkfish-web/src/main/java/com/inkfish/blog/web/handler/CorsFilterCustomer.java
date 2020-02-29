@@ -1,4 +1,4 @@
-package com.inkfish.blog.web.config;
+package com.inkfish.blog.web.handler;
 
 
 import org.springframework.core.Ordered;
@@ -13,9 +13,9 @@ import java.util.List;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class CorsFilter extends org.springframework.web.filter.CorsFilter {
+public class CorsFilterCustomer extends org.springframework.web.filter.CorsFilter {
 
-    public CorsFilter() {
+    public CorsFilterCustomer() {
         super(configurationSource());
     }
 

@@ -43,6 +43,7 @@ public class ArticleService {
 
 
     public Article getArticle(Integer id){
+
         return articleMapper.getOne(new QueryWrapper<Article>().select("title,overview,enable_comment,category_id,status," +
                 "content,create_time,update_time").eq("id",id));
     }

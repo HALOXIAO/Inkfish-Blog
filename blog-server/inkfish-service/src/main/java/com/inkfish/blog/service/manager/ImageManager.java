@@ -37,10 +37,10 @@ public class ImageManager {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");//设置日期格式
         String timeId = LocalDateTime.now().format(fmt);
         String code = Integer.toString(title.hashCode());
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(imageDirName).append("/").append(code).append("-")
+        StringBuilder Stringbuilder = new StringBuilder();
+        Stringbuilder.append(imageDirName).append("/").append(code).append("-")
                 .append(timeId);
-        File storeFile = new File(buffer.toString());
+        File storeFile = new File(Stringbuilder.toString());
         if (!storeFile.exists()) {
             flag = storeFile.mkdirs();
         } else {
@@ -52,12 +52,16 @@ public class ImageManager {
             throw e;
         }
         String imageId = LocalDateTime.now().format(fmt);
-        buffer.append("/").append(imageId).append("-").append(file.getOriginalFilename());
-        Files.createFile(Paths.get(buffer.toString()));
-        file.transferTo(Paths.get(buffer.toString()));
+        Stringbuilder.append("/").append(imageId).append("-").append(file.getOriginalFilename());
+        Files.createFile(Paths.get(Stringbuilder.toString()));
+        file.transferTo(Paths.get(Stringbuilder.toString()));
         return code + "-" + timeId + "/" + imageId + "-" + (file.getOriginalFilename());
     }
 
+
+
+
+    // Need To Change ...... Maybe?
     public void deleteImage(Integer id) throws IOException {
         Article article = articleMapper.getOne(new QueryWrapper<Article>().select("title").eq("id", id.toString()));
         if (article == null) {
@@ -65,12 +69,15 @@ public class ImageManager {
         }
         String oldTitle = article.getTitle();
         File file = new File(imageDirName + "/");
-        if (file.list() != null) {
-            for (String name : file.list()) {
+        if (file.list() != null || file.list().length > 0) {
+            for (int i = file.list().length - 1; i >= 0; i--) {
+                String name = file.list()[i];
                 if (name.substring(0, name.lastIndexOf("-")).equals(oldTitle)) {
                     Files.delete(Paths.get(imageDirName + "/" + name));
+                    break;
                 }
             }
+
         }
     }
 

@@ -49,7 +49,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Inkfish Blog",
-                "欢迎来github Inkfish点赞 \n " +
+                "欢迎来github为Inkfish点赞 \n " +
                         "关于ResultBean中Code的说明：\n" +
                         "    NO_LOGIN(-1):未登录\n" +
                         "    SUCCESS(0)：成功\n" +

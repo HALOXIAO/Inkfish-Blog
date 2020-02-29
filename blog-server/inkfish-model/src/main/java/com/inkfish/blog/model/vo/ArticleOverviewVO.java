@@ -11,7 +11,7 @@ import java.util.List;
  * @author HALOXIAO
  **/
 
-@ApiModel("文章预览")
+@ApiModel("文章预览实体")
 public class ArticleOverviewVO {
 
     @ApiModelProperty("文章的Id，透过这个Id来访问文章")

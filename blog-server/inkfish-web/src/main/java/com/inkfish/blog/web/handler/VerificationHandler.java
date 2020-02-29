@@ -1,4 +1,4 @@
-package com.inkfish.blog.web.handle;
+package com.inkfish.blog.web.handler;
 
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 

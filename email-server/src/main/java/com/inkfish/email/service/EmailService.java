@@ -42,7 +42,7 @@ public class EmailService {
             helper.setFrom(mailProperties.getUsername());
             helper.setSubject("账号注册");
             Context context = new Context();
-            String code = stringRedisTemplate.opsForValue().get(REDIS_NAMESPACE.EMAIL_VERIFICATION_REGISTER.getValue() + targetEmail);
+            String code = stringRedisTemplate.opsForValue().get(REDIS_NAMESPACE.EMAIL_VERIFICATION_REGISTER_NAMESPACE.getValue() + targetEmail);
             context.setVariable("code", code);
             String mail = templateEngine.process("RegisterMail",context);
             helper.setText(mail, true);
@@ -62,7 +62,7 @@ public class EmailService {
             helper.setFrom(mailProperties.getUsername());
             helper.setSubject("找回密码");
             Context context = new Context();
-            String code = stringRedisTemplate.opsForValue().get(REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD.getValue() + targetEmail);
+            String code = stringRedisTemplate.opsForValue().get(REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_NAMESPACE.getValue() + targetEmail);
             context.setVariable("code", code);
             String mail = templateEngine.process("ForgetPasswordMail",context);
             helper.setText(mail, true);

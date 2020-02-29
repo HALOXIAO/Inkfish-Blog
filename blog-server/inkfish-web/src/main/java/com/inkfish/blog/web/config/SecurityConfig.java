@@ -1,19 +1,17 @@
 package com.inkfish.blog.web.config;
 
-import com.inkfish.blog.web.handle.*;
+import com.inkfish.blog.web.handler.exceptionHandler.*;
 import com.inkfish.blog.web.manager.UserDetailsServiceCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.AccessDeniedHandler;
 
 /**
  * @author HALOXIAO
@@ -60,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable().authorizeRequests().antMatchers("/login", "/logout", "/register", "/verification", "/home").permitAll();
         http.exceptionHandling().authenticationEntryPoint(noLoginHandler).accessDeniedHandler(accessDeniedHandlerImp);
+        http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll();
     }
 
     @Override

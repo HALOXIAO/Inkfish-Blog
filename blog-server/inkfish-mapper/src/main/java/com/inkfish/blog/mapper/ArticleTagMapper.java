@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.inkfish.blog.model.pojo.ArticleTag;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.Map;
 /**
  * @author HALOXIAO
  **/
-@Component
+@Repository
 public class ArticleTagMapper extends ServiceImpl<ArticleTagDao, ArticleTag> {
 
 

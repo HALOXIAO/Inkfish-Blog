@@ -1,4 +1,4 @@
-package com.inkfish.blog.web.handle;
+package com.inkfish.blog.web.handler.exceptionHandler;
 
 import com.alibaba.fastjson.JSON;
 import com.inkfish.blog.common.RESULT_BEAN_STATUS_CODE;

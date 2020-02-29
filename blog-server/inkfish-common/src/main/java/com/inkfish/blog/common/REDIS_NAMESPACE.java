@@ -5,11 +5,17 @@ package com.inkfish.blog.common;
  **/
 public enum REDIS_NAMESPACE {
 
-    //找回密码功能
-    EMAIL_VERIFICATION_FORGET_PASSWORD("email:verification:forgetPassword:"),
+    //找回密码功能命名空间
+    EMAIL_VERIFICATION_FORGET_PASSWORD_NAMESPACE("email:verification:forgetPassword:"),
 
-    //注册账号功能
-    EMAIL_VERIFICATION_REGISTER("email:verification:register:");
+    //注册账号功能命名空间
+    EMAIL_VERIFICATION_REGISTER_NAMESPACE("email:verification:register:"),
+
+    //文章点赞数
+    ARTICLE_INFORMATION_VOTE("article:information:vote:voteNumber1"),
+
+    //文章浏览人数
+    ARTICLE_INFORMATION_WATCH("article:information:watch:watchNumber1");
 
     private final String value;
 

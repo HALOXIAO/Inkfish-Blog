@@ -50,9 +50,12 @@ public class ArticleController {
 
 
     @ApiOperation(value = "获取文章")
-    @ApiResponse(code = 200,message = "返回文章实体的所有信息")
+    @ApiResponse(code = 200, message = "返回文章实体的所有信息")
     @GetMapping("/article")
     public ResultBean<Article> getArticle(@RequestParam(value = "id") Integer id) {
+        if (id == null) {
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+        }
         Article article = articleService.getArticle(id);
         article.setId(id);
         ResultBean<Article> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
@@ -60,11 +63,16 @@ public class ArticleController {
         return bean;
     }
 
+    @ApiOperation(value = "给文章进行点赞")
+    @GetMapping("/article/like")
+    public void articleLike(){
+
+    }
+
     @ApiOperation(value = "发布或更新文章")
     @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、无权限")
     @PostMapping("/article")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
-
     public ResultBean<Integer> publishArticle(@RequestBody @Valid ArticlePush articleP, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             ResultBean<Integer> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
@@ -107,6 +115,7 @@ public class ArticleController {
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<String>> uploadImage(@RequestParam("file") List<MultipartFile> files, String title, Integer id) {
         List<String> path = new ArrayList<>();
+        //注意，需要顺序处理
         for (MultipartFile file : files) {
             try {
                 path.add(imageManager.addImage(file, title, id));
@@ -134,6 +143,9 @@ public class ArticleController {
         bean.setData(list);
         return bean;
     }
+
+
+
 
 /*
 * SELECT name FROM article_tag WHERE id INNER IN (

@@ -5,6 +5,7 @@ import com.inkfish.blog.model.pojo.ArticleAndTagRelation;
 import com.inkfish.blog.model.pojo.ArticleTag;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.Map;
 /**
  * @author HALOXIAO
  **/
-@Component
+@Repository
 public class ArticleTagRelationMapper extends ServiceImpl<ArticleTagRelationDao, ArticleAndTagRelation> {
 
 
