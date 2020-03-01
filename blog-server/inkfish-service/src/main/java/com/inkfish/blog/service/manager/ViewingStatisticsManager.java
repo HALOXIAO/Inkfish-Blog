@@ -1,14 +1,16 @@
-package com.inkfish.blog.web.handler;
+package com.inkfish.blog.service.manager;
 
 import com.inkfish.blog.common.REDIS_NAMESPACE;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -20,8 +22,8 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author HALOXIAO
  **/
 
-@Component
-public class ViewingStatisticsHandler {
+@Service
+public class ViewingStatisticsManager {
 
     private StringRedisTemplate redisTemplate;
 
@@ -33,7 +35,7 @@ public class ViewingStatisticsHandler {
     private final static long FLUSH_TIME = 180;
 
     @Autowired
-    public ViewingStatisticsHandler(StringRedisTemplate redisTemplate) {
+    public ViewingStatisticsManager(StringRedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
         this.vote = new ConcurrentHashMap<>();
         pushTime = new AtomicLong(getCurrentUnixTime());
@@ -56,14 +58,12 @@ public class ViewingStatisticsHandler {
 
     private void freshVoteMap(ConcurrentHashMap<AtomicInteger, AtomicLong> vote) {
         redisTemplate.executePipelined(new RedisCallback<String>() {
-            RedisSerializer redisSerializer = redisTemplate.getKeySerializer();
-
             @Override
             public String doInRedis(RedisConnection connection) throws DataAccessException {
+                StringRedisConnection stringRedisConn = (StringRedisConnection) connection;
                 vote.forEach((atomicInteger, atomicLong) -> {
                     AtomicLong value = vote.remove(atomicInteger);
-                    connection.hIncrBy(redisSerializer.serialize(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue()), redisSerializer.serialize(atomicInteger.get()), value.get());
-//                        redisTemplate.opsForHash().increment(REDIS_NAMESPACE.ARTICLE_INFORMATION_VOTE.getValue(), atomicInteger.get(), atomicLong.get());
+                    stringRedisConn.hIncrBy(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(), String.valueOf(atomicInteger.get()), value.get());
                 });
                 return null;
             }

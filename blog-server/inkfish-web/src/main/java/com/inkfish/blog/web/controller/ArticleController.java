@@ -1,5 +1,6 @@
 package com.inkfish.blog.web.controller;
 
+import com.inkfish.blog.common.REDIS_NAMESPACE;
 import com.inkfish.blog.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.common.ResultBean;
 import com.inkfish.blog.mapper.convert.ArticlePushToArticle;
@@ -14,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,9 @@ public class ArticleController {
     @Autowired
     private HttpSession httpSession;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
 
     @ApiOperation(value = "获取文章")
     @ApiResponse(code = 200, message = "返回文章实体的所有信息")
@@ -64,9 +69,14 @@ public class ArticleController {
     }
 
     @ApiOperation(value = "给文章进行点赞")
+    @ApiResponse(code = 200, message = "返回的data为点赞数")
+    @PreAuthorize("hasAnyRole('ROLE_ROOT','ROLE_NORMAL')")
     @GetMapping("/article/like")
-    public void articleLike(){
-
+    public ResultBean<Integer> articleLike(Integer id) {
+        Integer like = (Integer) redisTemplate.opsForHash().get(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), String.valueOf(id));
+        ResultBean<Integer> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        bean.setData(like + 1);
+        return bean;
     }
 
     @ApiOperation(value = "发布或更新文章")

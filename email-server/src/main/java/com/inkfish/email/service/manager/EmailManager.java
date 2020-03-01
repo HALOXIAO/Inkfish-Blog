@@ -1,4 +1,4 @@
-package com.inkfish.email.service;
+package com.inkfish.email.service.manager;
 
 import com.inkfish.blog.common.REDIS_NAMESPACE;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import javax.mail.internet.MimeMessage;
  **/
 @Service
 @Slf4j
-public class EmailService {
+public class EmailManager {
 
     @Autowired
     JavaMailSender javaMailSender;
