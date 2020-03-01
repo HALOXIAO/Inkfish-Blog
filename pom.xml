@@ -17,6 +17,7 @@
     <modules>
         <module>blog-server</module>
         <module>email-server</module>
+        <module>search-server</module>
     </modules>
 
     <properties>

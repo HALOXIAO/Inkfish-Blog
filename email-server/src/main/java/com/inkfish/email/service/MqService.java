@@ -18,10 +18,10 @@ public class MqService {
         this.emailManager = emailManager;
     }
 
-    public void Email(){
+    public void Email() {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer();
         consumer.setNamesrvAddr("localhost:9876");
-        
+
 
     }
 
