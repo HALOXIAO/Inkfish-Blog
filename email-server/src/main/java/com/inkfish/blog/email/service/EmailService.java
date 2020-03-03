@@ -67,11 +67,12 @@ public class EmailService {
     }
 
 
-    public void forgetPasswordEmailService() {
+    public void emailService() {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer();
         consumer.setNamesrvAddr(mqConfig.getNameSrvAddress());
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
         consumer.setMessageModel(MessageModel.CLUSTERING);
+        consumer.setConsumerGroup("EMAIL");
         try {
             consumer.subscribe("email", "forgetPassword||register");
             consumer.registerMessageListener(messageListenerConcurrently());

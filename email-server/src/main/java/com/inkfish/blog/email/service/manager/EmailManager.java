@@ -2,14 +2,17 @@ package com.inkfish.blog.email.service.manager;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -21,7 +24,7 @@ import javax.mail.internet.MimeMessage;
 public class EmailManager {
 
     @Autowired
-    JavaMailSender javaMailSender;
+    JavaMailSenderImpl javaMailSender;
 
     @Autowired
     MailProperties mailProperties;
@@ -29,15 +32,12 @@ public class EmailManager {
     @Autowired
     TemplateEngine templateEngine;
 
-    @Autowired
-    StringRedisTemplate stringRedisTemplate;
 
     //TODO 回调，以及重试
     public void sendRegisterMail(String targetEmail,String code)throws MessagingException {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
             helper.setTo(targetEmail);
-            helper.setFrom(mailProperties.getUsername());
             helper.setSubject("账号注册");
             Context context = new Context();
             context.setVariable("code", code);
@@ -53,7 +53,6 @@ public class EmailManager {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
             helper.setTo(targetEmail);
-            helper.setFrom(mailProperties.getUsername());
             helper.setSubject("找回密码");
             Context context = new Context();
             context.setVariable("code", code);

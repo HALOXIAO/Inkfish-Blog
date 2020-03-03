@@ -13,8 +13,9 @@ public class RocketMQStartListener implements ApplicationListener<ApplicationRea
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        ConfigurableApplicationContext applicationContext = event.getApplicationContext();
-        EmailService emailService = applicationContext.getBean(EmailService.class);
-        emailService.forgetPasswordEmailService();
+//            ConfigurableApplicationContext applicationContext = event.getApplicationContext();
+//            EmailService emailService = applicationContext.getBean(EmailService.class);
+//            emailService.emailService();
+
     }
 }

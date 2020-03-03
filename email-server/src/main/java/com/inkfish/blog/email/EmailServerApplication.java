@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @author HALOXIAO
  **/
+
+
 @SpringBootApplication
 public class EmailServerApplication {
     public static void main(String[] args) {

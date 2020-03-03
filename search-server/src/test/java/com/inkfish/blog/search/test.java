@@ -2,7 +2,6 @@ package com.inkfish.blog.search;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +24,5 @@ public class test {
 
     @Test
     public void contextLoads()throws Exception{
-        SmartChineseAnalyzer analyzer = new SmartChineseAnalyzer();
-        print(analyzer);
     }
 }
