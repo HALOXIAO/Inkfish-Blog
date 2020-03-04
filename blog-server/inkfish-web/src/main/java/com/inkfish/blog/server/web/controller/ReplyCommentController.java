@@ -4,6 +4,7 @@ import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.model.pojo.CommentReply;
 import com.inkfish.blog.server.service.CommentReplyService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -15,7 +16,7 @@ import java.util.List;
 /**
  * @author HALOXIAO
  **/
-
+@Api("对评论的评论")
 @RestController
 @Slf4j
 public class ReplyCommentController {

@@ -4,6 +4,7 @@ import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.model.pojo.ArticleComment;
 import com.inkfish.blog.server.service.CommentService;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,7 @@ import java.util.List;
 /**
  * @author HALOXIAO
  **/
+@Api("文章评论相关操作")
 @RestController
 @Slf4j
 public class CommentController {

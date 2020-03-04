@@ -5,12 +5,18 @@ import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.common.util.CodeVerification;
 import com.inkfish.blog.server.mapper.convert.RegisterToUser;
+import com.inkfish.blog.server.model.front.Email;
 import com.inkfish.blog.server.model.front.Register;
 import com.inkfish.blog.server.model.pojo.User;
+import com.inkfish.blog.server.service.EmailService;
 import com.inkfish.blog.server.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
@@ -21,16 +27,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author HALOXIAO
  **/
+@Api("用户账号相关操作")
 @RestController
 @Slf4j
 public class UserController {
@@ -50,14 +59,19 @@ public class UserController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    EmailService emailService;
 
-    //TODO Verification Code
+
     @PostMapping("/register")
     public ResultBean<String> register(@Valid @RequestBody Register register, BindingResult result) {
         if (result.hasErrors()) {
             ResultBean<String> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
             log.warn(result.getFieldErrors() == null ? "No Error Information" : result.getFieldErrors().toString());
             return bean;
+        }
+        if (register.getCode() != httpSession.getAttribute("registerCode")) {
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
         User user = RegisterToUser.INSTANCE.from(register);
         log.info(register.toString());
@@ -68,9 +82,29 @@ public class UserController {
         return new ResultBean<>("register fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
     }
 
+
+    @PostMapping("/register/code")
+    public ResultBean<String> registerCode(@Valid @RequestBody Email email, BindingResult result, HttpServletResponse response, HttpServletRequest request) {
+        if (result.hasErrors()) {
+            ResultBean<String> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+            log.warn(result.getFieldErrors() == null ? "No Error Information" : result.getFieldErrors().toString());
+            return bean;
+        }
+        try {
+            String code = emailService.registerCode(email.toString());
+            httpSession.setAttribute("registerCode", code);
+            //TODO            此处可以集成监控和报警
+        } catch (InterruptedException | RemotingException | MQClientException | MQBrokerException e) {
+            log.error(e.getMessage());
+            return new ResultBean<>("Remoting system error", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+        }
+        return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+    }
+
+
     @GetMapping("/verification")
     @ApiOperation(value = "获取验证码，验证码的文本将放在Header中的'code'里，前端直接匹配即可")
-    @ApiResponse(code = 200,message = "返回的图像为jpg格式，有可能返回的Code：成功、未知异常")
+    @ApiResponse(code = 200, message = "返回的图像为jpg格式，有可能返回的Code：成功、未知异常")
     public void verificationCode(HttpServletResponse response) throws IOException {
         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
@@ -88,8 +122,12 @@ public class UserController {
     }
 
     @PostMapping("/getpass")
-    public ResultBean<String> forgetPassword(@Valid @RequestBody @Email String email, BindingResult bindingResult) {
-
+    public ResultBean<String> forgetPassword(@Valid @RequestBody Email email, BindingResult result) {
+        if (result.hasErrors()) {
+            ResultBean<String> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+            log.warn(result.getFieldErrors() == null ? "No Error Information" : result.getFieldErrors().toString());
+            return bean;
+        }
         return null;
     }
 

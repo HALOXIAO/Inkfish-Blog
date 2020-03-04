@@ -12,10 +12,10 @@ public enum REDIS_NAMESPACE {
     EMAIL_VERIFICATION_REGISTER_NAMESPACE("email:verification:register:"),
 
     //文章点赞数
-    ARTICLE_INFORMATION_LIKE("article:information:vote:voteNumber1"),
+    ARTICLE_INFORMATION_LIKE("article:information:vote:likesNumber"),
 
     //文章浏览人数
-    ARTICLE_INFORMATION_WATCH("article:information:watch:watchNumber1"),
+    ARTICLE_INFORMATION_WATCH("article:information:watch:viewsNumber"),
 
     //文章已点赞用户
     ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE("article:information:alreadyLike:");

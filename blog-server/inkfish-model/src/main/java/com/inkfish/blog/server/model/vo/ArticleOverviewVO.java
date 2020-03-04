@@ -1,6 +1,5 @@
 package com.inkfish.blog.server.model.vo;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -28,6 +27,12 @@ public class ArticleOverviewVO {
 
     @ApiModelProperty("文章的标签")
     private List<String> tags;
+
+    @ApiModelProperty("点赞次数")
+    private Integer likes;
+
+    @ApiModelProperty("浏览次数")
+    private Integer views;
 
     public Integer getId() {
         return id;
@@ -69,14 +74,33 @@ public class ArticleOverviewVO {
         this.tags = tags;
     }
 
+    public Integer getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Integer likes) {
+        this.likes = likes;
+    }
+
+    public Integer getViews() {
+        return views;
+    }
+
+    public void setViews(Integer views) {
+        this.views = views;
+    }
+
     @Override
     public String toString() {
-        return "ArticleOverview{" +
+        return "ArticleOverviewVO{" +
                 "id=" + id +
                 ", overview='" + overview + '\'' +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", tags=" + tags +
+                ", likes=" + likes +
+                ", views=" + views +
                 '}';
     }
+
 }

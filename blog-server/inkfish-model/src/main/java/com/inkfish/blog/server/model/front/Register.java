@@ -1,5 +1,7 @@
 package com.inkfish.blog.server.model.front;
 
+import com.inkfish.blog.server.common.annotation.PasswordRestriction;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
@@ -9,14 +11,27 @@ import javax.validation.constraints.NotEmpty;
 public class Register {
 
 
+    @NotEmpty
     @Email
     String email;
 
     @NotEmpty
     String username;
 
+    @PasswordRestriction
     @NotEmpty
     String password;
+
+    @NotEmpty
+    String code;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getEmail() {
         return email;
@@ -40,5 +55,15 @@ public class Register {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "Register{" +
+                "email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", code='" + code + '\'' +
+                '}';
     }
 }

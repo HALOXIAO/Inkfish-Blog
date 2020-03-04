@@ -7,10 +7,12 @@ import com.inkfish.blog.server.mapper.RoleUserMapper;
 import com.inkfish.blog.server.mapper.UserDao;
 import com.inkfish.blog.server.mapper.UserMapper;
 import com.inkfish.blog.server.model.pojo.User;
+import com.inkfish.blog.server.service.manager.EmailManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
 
@@ -19,7 +21,7 @@ import java.util.List;
  **/
 @Service
 @Slf4j
-public class UserService extends ServiceImpl<UserDao,User> {
+public class UserService {
 
     @Autowired
     UserMapper userMapper;
@@ -30,26 +32,34 @@ public class UserService extends ServiceImpl<UserDao,User> {
     @Autowired
     RoleUserMapper roleUserMapper;
 
+    @Autowired
+    EmailManager emailManager;
 
     @Transactional(rollbackFor = DBTransactionalException.class)
     public boolean addUser(User user, String rolename) {
-
-
         if (!userMapper.addUser(user) || !roleUserMapper.addUserRole(user.getUsername(), rolename)) {
-            DBTransactionalException exception = new DBTransactionalException("添加用户发生异常");
-            log.error(exception.getMessage());
-            throw exception;
+            try {
+                throw new DBTransactionalException("添加用户发生异常");
+            } catch (DBTransactionalException e) {
+                log.error(e.getMessage());
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return false;
+            }
         }
         return true;
     }
 
     @Transactional(rollbackFor = DBTransactionalException.class)
-    public boolean addUser(User user){
+    public boolean addUser(User user) {
         String rolename = "ROLE_NORMAL";
         if (!userMapper.addUser(user) || !roleUserMapper.addUserRole(user.getUsername(), rolename)) {
-            DBTransactionalException exception = new DBTransactionalException("添加用户发生异常");
-            log.error(exception.getMessage());
-            throw exception;
+            try {
+                throw new DBTransactionalException("添加用户发生异常");
+            } catch (DBTransactionalException e) {
+                log.error(e.getMessage());
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return false;
+            }
         }
         return true;
     }

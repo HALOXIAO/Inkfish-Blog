@@ -46,7 +46,11 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
         </dependency>
 
-
+        <dependency>
+            <groupId>cn.keking.project</groupId>
+            <artifactId>kk-anti-reptile</artifactId>
+            <version>1.0.0-RELEASE</version>
+        </dependency>
 
 
     </dependencies>

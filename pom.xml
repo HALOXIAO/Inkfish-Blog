@@ -224,39 +224,6 @@
                 <version>1.1.20</version>
             </dependency>
 
-            <!-- Lucene核心库 -->
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-core</artifactId>
-                <version>8.1.0</version>
-            </dependency>
-            <!-- Lucene解析库 -->
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-queryparser</artifactId>
-                <version>8.1.0</version>
-            </dependency>
-            <!-- Lucene附加的分析库 -->
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-analyzers-common</artifactId>
-                <version>8.1.0</version>
-            </dependency>
-
-            <!--Lucene中文分词 -->
-<!--            <dependency>-->
-<!--                <groupId>test</groupId>-->
-<!--                <artifactId>test</artifactId>-->
-<!--                <systemPath>${project.basedir}/WEB-INF/lib/lucene-analyzers-smartcn-8.1.0.jar</systemPath>-->
-<!--                <scope>system</scope>-->
-<!--            </dependency>-->
-
-            <dependency>
-                <groupId>org.apache.lucene</groupId>
-                <artifactId>lucene-highlighter</artifactId>
-                <version>8.1.0</version>
-            </dependency>
-
 
             <dependency>
                 <groupId>org.mapstruct</groupId>
@@ -268,6 +235,11 @@
                 <artifactId>mapstruct-processor</artifactId>
                 <version>${org.mapstruct.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
             </dependency>
 
 
@@ -291,8 +263,6 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
-
-
 
 
         <dependency>
@@ -319,8 +289,6 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
         </dependency>
-
-
 
 
         <dependency>
@@ -353,32 +321,31 @@
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <compilerArguments>
-                        <extdirs>${project.basedir}/WEB-INF/lib</extdirs>
-                    </compilerArguments>
-                </configuration>
-            </plugin>
-        </plugins>
+        <!--        <plugins>-->
+        <!--            <plugin>-->
+        <!--                <groupId>org.apache.maven.plugins</groupId>-->
+        <!--                <artifactId>maven-compiler-plugin</artifactId>-->
+        <!--                <configuration>-->
+        <!--                    <encoding>UTF-8</encoding>-->
+        <!--                    <compilerArguments>-->
+        <!--                        <extdirs>${project.basedir}/WEB-INF/lib</extdirs>-->
+        <!--                    </compilerArguments>-->
+        <!--                </configuration>-->
+        <!--            </plugin>-->
+        <!--        </plugins>-->
 
-<!--        <resources>-->
-<!--            <resource>-->
-<!--                <directory>${project.basedir}/WEB-INF/lib</directory>-->
-<!--                <targetPath>/BOOT-INF/lib/</targetPath>-->
-<!--                <includes>-->
-<!--                    <include>**/*.jar</include>-->
-<!--                </includes>-->
-<!--            </resource>-->
-<!--        </resources>-->
+        <!--        <resources>-->
+        <!--            <resource>-->
+        <!--                <directory>${project.basedir}/WEB-INF/lib</directory>-->
+        <!--                <targetPath>/BOOT-INF/lib/</targetPath>-->
+        <!--                <includes>-->
+        <!--                    <include>**/*.jar</include>-->
+        <!--                </includes>-->
+        <!--            </resource>-->
+        <!--        </resources>-->
 
 
     </build>
-
 
 
 </project>
