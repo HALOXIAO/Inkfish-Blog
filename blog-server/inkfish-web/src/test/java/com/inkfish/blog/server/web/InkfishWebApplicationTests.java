@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 
 @SpringBootTest
 @Component
@@ -20,7 +22,12 @@ class InkfishWebApplicationTests {
 
     @Test
     void contextLoads() throws  InterruptedException, RemotingException, MQClientException, MQBrokerException {
-        emailManager.sendForgetPasswordEmail("haloxql@gmail.com","aasdwxsd");
+
+        ConcurrentHashMap<String, String>map = new ConcurrentHashMap<>();
+        for (int i = 0; i <100 ; i++) {
+            map.put("asd","asd");
+        }
+//        emailManager.sendForgetPasswordEmail("haloxql@gmail.com","aasdwxsd");
     }
 }
 

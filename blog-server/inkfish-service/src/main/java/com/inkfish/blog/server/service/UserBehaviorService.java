@@ -1,7 +1,6 @@
 package com.inkfish.blog.server.service;
 
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
