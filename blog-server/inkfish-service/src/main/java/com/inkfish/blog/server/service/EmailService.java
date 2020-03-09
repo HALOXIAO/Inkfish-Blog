@@ -29,4 +29,10 @@ public class EmailService {
         return code;
     }
 
+    public String recoverPassword(String email) throws InterruptedException, RemotingException, MQClientException, MQBrokerException {
+        String code = RandomString.make(5);
+        emailManager.sendForgetPasswordEmail(email, code);
+        return code;
+    }
+
 }

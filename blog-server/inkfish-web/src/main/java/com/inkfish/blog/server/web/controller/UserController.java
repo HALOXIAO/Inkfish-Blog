@@ -33,8 +33,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author HALOXIAO
@@ -63,16 +61,19 @@ public class UserController {
     EmailService emailService;
 
 
+    //TODO  邮箱注册
     @PostMapping("/register")
     public ResultBean<String> register(@Valid @RequestBody Register register, BindingResult result) {
         if (result.hasErrors()) {
             ResultBean<String> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
-            log.warn(result.getFieldErrors() == null ? "No Error Information" : result.getFieldErrors().toString());
+            log.warn(result.getFieldError() == null ? "No Error Information" : result.getFieldErrors().toString());
             return bean;
         }
         if (register.getCode() != httpSession.getAttribute("registerCode")) {
+            httpSession.removeAttribute("registerCode");
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
+        httpSession.removeAttribute("registerCode");
         User user = RegisterToUser.INSTANCE.from(register);
         log.info(register.toString());
 
@@ -88,7 +89,7 @@ public class UserController {
     public ResultBean<String> registerCode(@Valid @RequestBody Email email, BindingResult result, HttpServletResponse response, HttpServletRequest request) {
         if (result.hasErrors()) {
             ResultBean<String> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
-            log.warn(result.getFieldErrors() == null ? "No Error Information" : result.getFieldErrors().toString());
+            log.warn(result.getFieldError() == null ? "No Error Information" : result.getFieldErrors().toString());
             return bean;
         }
         try {
@@ -122,14 +123,35 @@ public class UserController {
 
     }
 
-    @PostMapping("/getpass")
-    public ResultBean<String> forgetPassword(@Valid @RequestBody Email email, BindingResult result) {
+    @PostMapping("/recover/password")
+    public ResultBean<String> forgetPassword(String code) {
+        if (httpSession.getAttribute("forgetPasswordCode").equals(code)) {
+
+        }
+
+        return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+    }
+
+
+    @GetMapping("/recover/password")
+    public ResultBean<String> forgetPasswordCode(@Valid @RequestBody Email email, BindingResult result) {
         if (result.hasErrors()) {
             ResultBean<String> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
-            log.warn(result.getFieldErrors() == null ? "No Error Information" : result.getFieldErrors().toString());
+            log.warn(result.getFieldError() == null ? "No Error Information" : result.getFieldErrors().toString());
             return bean;
         }
-        return null;
+        try {
+            String code = emailService.registerCode(email.getEmail());
+            httpSession.setAttribute("forgetPasswordCode", code);
+            httpSession.setAttribute("email", email);
+            ResultBean<String> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+            bean.setData(code);
+            return bean;
+        } catch (InterruptedException | RemotingException | MQClientException | MQBrokerException e) {
+            log.error(e.getMessage(), e.getCause());
+            return new ResultBean<>("Remoting system error", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+        }
     }
+
 
 }
