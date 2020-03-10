@@ -1,6 +1,5 @@
 package com.inkfish.blog.server.web;
 
-import com.inkfish.blog.server.service.manager.EmailManager;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.remoting.exception.RemotingException;
@@ -10,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.PriorityQueue;
 
 
 @SpringBootTest
