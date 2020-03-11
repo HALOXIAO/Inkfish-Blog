@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -25,6 +26,10 @@ public class EmailManager {
 
     private StringRedisTemplate stringRedisTemplate;
 
+    private final int ONE_SECOND = 60;
+
+    private final int KEY_STORE_TIME = 5;
+
     private MqConfig mqConfig;
 
     @Autowired
@@ -35,7 +40,7 @@ public class EmailManager {
 
     //注意，消息幂等性完全由Consumer决定
     public void sendForgetPasswordEmail(String email, String verificationCode) throws MQClientException, RemotingException, InterruptedException, MQBrokerException {
-        stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_NAMESPACE.getValue() + email, verificationCode);
+        stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_NAMESPACE.getValue() + email, verificationCode, Duration.ofMinutes(KEY_STORE_TIME));
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");//设置日期格式
         String key = email + "-" + LocalDateTime.now().format(fmt);
         DefaultMQProducer producer = new DefaultMQProducer("email");
@@ -50,7 +55,7 @@ public class EmailManager {
     }
 
     public void sendRegisterEmail(String email, String verificationCode) throws MQClientException, RemotingException, InterruptedException, MQBrokerException {
-        stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_REGISTER_NAMESPACE.getValue() + email, verificationCode);
+        stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_REGISTER_NAMESPACE.getValue() + email, verificationCode, Duration.ofMinutes(KEY_STORE_TIME));
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");//设置日期格式
         String key = email + "-" + LocalDateTime.now().format(fmt);
         DefaultMQProducer producer = new DefaultMQProducer("email");

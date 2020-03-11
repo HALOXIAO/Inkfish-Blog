@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+//TODO 当文章标题重复时所保存的照片的Bug
+
 /**
  * @author HALOXIAO
  **/

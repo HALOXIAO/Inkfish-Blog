@@ -3,6 +3,7 @@ package com.inkfish.blog.server.web.controller;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
+import com.inkfish.blog.server.common.SESSION_CODE;
 import com.inkfish.blog.server.common.util.CodeVerification;
 import com.inkfish.blog.server.mapper.convert.RegisterToUser;
 import com.inkfish.blog.server.model.front.Email;
@@ -62,6 +63,7 @@ public class UserController {
 
 
     //TODO  邮箱注册
+    @ApiOperation(value = "注册账号，根据邮箱注册")
     @PostMapping("/register")
     public ResultBean<String> register(@Valid @RequestBody Register register, BindingResult result) {
         if (result.hasErrors()) {
@@ -69,14 +71,12 @@ public class UserController {
             log.warn(result.getFieldError() == null ? "No Error Information" : result.getFieldErrors().toString());
             return bean;
         }
-        if (register.getCode() != httpSession.getAttribute("registerCode")) {
-            httpSession.removeAttribute("registerCode");
+        if (register.getCode() != httpSession.getAttribute(SESSION_CODE.REGISTER_VERIFICATION_CODE.getValue())) {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
-        httpSession.removeAttribute("registerCode");
+        httpSession.removeAttribute(SESSION_CODE.REGISTER_VERIFICATION_CODE.getValue());
         User user = RegisterToUser.INSTANCE.from(register);
         log.info(register.toString());
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (userService.addUser(user)) {
             return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
@@ -94,7 +94,7 @@ public class UserController {
         }
         try {
             String code = emailService.registerCode(email.toString());
-            httpSession.setAttribute("registerCode", code);
+            httpSession.setAttribute(SESSION_CODE.REGISTER_VERIFICATION_CODE.getValue(), code);
             //TODO            此处可以集成监控和报警
         } catch (InterruptedException | RemotingException | MQClientException | MQBrokerException e) {
             log.error(e.getMessage());
@@ -123,16 +123,17 @@ public class UserController {
 
     }
 
+    @ApiOperation("用于验证密码，在忘记密码的情况下使用，将会验证所输入的验证码是否匹配")
     @PostMapping("/recover/password")
-    public ResultBean<String> forgetPassword(String code) {
-        if (httpSession.getAttribute("forgetPasswordCode").equals(code)) {
-
+    public ResultBean<Boolean> forgetPassword(String code) {
+        if (httpSession.getAttribute(SESSION_CODE.RECOVER_VERIFICATION_CODE.getValue()).equals(code)) {
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
-
-        return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+        return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
     }
 
 
+    @ApiOperation(value = "用于找回密码，在忘记密码的情况下使用，将会发送验证码至指定邮箱")
     @GetMapping("/recover/password")
     public ResultBean<String> forgetPasswordCode(@Valid @RequestBody Email email, BindingResult result) {
         if (result.hasErrors()) {
@@ -142,7 +143,7 @@ public class UserController {
         }
         try {
             String code = emailService.registerCode(email.getEmail());
-            httpSession.setAttribute("forgetPasswordCode", code);
+            httpSession.setAttribute(SESSION_CODE.RECOVER_VERIFICATION_CODE.getValue(), code);
             httpSession.setAttribute("email", email);
             ResultBean<String> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
             bean.setData(code);
