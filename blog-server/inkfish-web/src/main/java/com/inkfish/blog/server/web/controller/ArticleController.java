@@ -124,18 +124,25 @@ public class ArticleController {
     @PostMapping("/articleImage")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<String>> uploadImage(@RequestParam("file") List<MultipartFile> files, String title, Integer id) {
-        List<String> path = new ArrayList<>();
+        List<String> paths = new ArrayList<>();
+        LocalDateTime localDateTime = LocalDateTime.now();
         //注意，需要顺序处理
         for (MultipartFile file : files) {
             try {
-                path.add(imageManager.addImage(file, title, id));
+                String path = imageManager.addImage(file, title, id, localDateTime);
+                if (null == path) {
+                    return new ResultBean<>("title already exist", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+                }
+                paths.add(path);
+
+
             } catch (IOException e) {
                 log.error(e.getMessage());
                 return new ResultBean<>("upload image fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
             }
         }
         ResultBean<List<String>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-        bean.setData(path);
+        bean.setData(paths);
         return bean;
     }
 

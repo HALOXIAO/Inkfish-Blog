@@ -50,10 +50,14 @@ public class ArticleService {
                 "content,create_time,update_time").eq("id",id));
     }
 
+
     public boolean addArticle(Article article) {
         return articleMapper.save(article);
     }
 
+    /**
+     * 当有tags时的添加文章
+     * */
     @Transactional(rollbackFor = DBTransactionalException.class)
     public boolean addArticleWithTags(Article article, List<ArticleTag> tags) {
         if (articleMapper.save(article)) {
@@ -68,6 +72,9 @@ public class ArticleService {
         throw e;
     }
 
+    /**
+     * 根据文章的唯一id进行删除
+     * */
     @Transactional(rollbackFor = {DBTransactionalException.class,IOException.class})
     public void deleteArticleById(Integer id) throws IOException {
         if (articleMapper.removeById(id)) {

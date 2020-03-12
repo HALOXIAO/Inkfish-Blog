@@ -154,5 +154,11 @@ public class UserController {
         }
     }
 
+    @ApiOperation(value = "Github登陆")
+    @PostMapping("")
+    public ResultBean<String> test(){
+        return null;
+    }
+
 
 }

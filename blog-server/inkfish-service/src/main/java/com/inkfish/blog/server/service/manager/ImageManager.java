@@ -6,6 +6,7 @@ import com.inkfish.blog.server.mapper.ArticleMapper;
 import com.inkfish.blog.server.model.pojo.Article;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,38 +28,45 @@ public class ImageManager {
     @Autowired
     ArticleMapper articleMapper;
 
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+
     private static final String imageDirName = "../../Image";
 
-    public String addImage(MultipartFile file, String title, Integer id) throws IOException {
+    private static final String REDIS_TITLE_STORE = "article:title";
+
+    private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");//设置日期格式
+
+    /**
+     * 存放图片，图片的格式为(以jpg为例)：title.hashCode-yyyyMMddHHmmss/yyyyMMddHHmmss.jpg
+     */
+    public String addImage(MultipartFile file, String title, Integer id, LocalDateTime time) throws IOException {
         if (id != null) {
             deleteImage(id);
         }
         boolean flag = true;
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");//设置日期格式
-        String timeId = LocalDateTime.now().format(fmt);
+        String timeId = time.format(FMT);
         String code = Integer.toString(title.hashCode());
         StringBuilder Stringbuilder = new StringBuilder();
         Stringbuilder.append(imageDirName).append("/").append(code).append("-")
                 .append(timeId);
         File storeFile = new File(Stringbuilder.toString());
-        if (!storeFile.exists()) {
-            flag = storeFile.mkdirs();
-        } else {
-            storeFile.delete();
+        Long tag = stringRedisTemplate.opsForSet().add(REDIS_TITLE_STORE, title);
+        if (null == tag) {
+            return null;
         }
+        flag = storeFile.mkdirs();
         if (!flag) {
             CreateFileException e = new CreateFileException(storeFile.getAbsolutePath() + "创建文件夹失败");
             log.warn(e.getMessage());
             throw e;
         }
-        String imageId = LocalDateTime.now().format(fmt);
+        String imageId = LocalDateTime.now().format(FMT);
         Stringbuilder.append("/").append(imageId).append("-").append(file.getOriginalFilename());
         Files.createFile(Paths.get(Stringbuilder.toString()));
         file.transferTo(Paths.get(Stringbuilder.toString()));
         return code + "-" + timeId + "/" + imageId + "-" + (file.getOriginalFilename());
     }
-
-
 
 
     // Need To Change ...... Maybe?
