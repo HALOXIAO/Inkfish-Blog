@@ -1,7 +1,10 @@
-package com.inkfish.blog.server.service.manager;
+package com.inkfish.blog.server.web.manager;
 
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -19,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author HALOXIAO
  **/
-
+@Aspect
 @Service
 public class ViewingStatisticsManager {
 
@@ -39,11 +42,18 @@ public class ViewingStatisticsManager {
         pushTime = new AtomicLong(getCurrentUnixTime());
     }
 
-    //TODO Redis Handle
     //无需担心内存问题，100w条数据所占用的内存只要100多MB,如果你有顾虑，可以使用分片来使内存占用达到一个相当低的程度
-    @AfterReturning("execution(*com.inkfish.blog.web.controller.ArticleController.getArticle(Integer))&&args(id)")
-    public void addLikesAfterWatching(Integer id) {
-        AtomicInteger articleId = new AtomicInteger(id);
+    @Pointcut("execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))")
+    public void addViewsAfterWatching() {
+    }
+
+    @AfterReturning("addViewsAfterWatching()")
+    public void addViewsAfterWatching(JoinPoint point) {
+        Object[] args = point.getArgs();
+        if (0 == args.length) {
+            return;
+        }
+        AtomicInteger articleId = new AtomicInteger((Integer) args[0]);
         if (!vote.containsKey(articleId)) {
             vote.put(articleId, new AtomicLong(1));
         } else {
@@ -54,6 +64,10 @@ public class ViewingStatisticsManager {
         }
     }
 
+
+    /**
+     * 将缓存的数值刷入Redis
+     */
     private void freshVoteMap(ConcurrentHashMap<AtomicInteger, AtomicLong> vote) {
         redisTemplate.executePipelined(new RedisCallback<String>() {
             @Override
@@ -61,7 +75,7 @@ public class ViewingStatisticsManager {
                 StringRedisConnection stringRedisConn = (StringRedisConnection) connection;
                 vote.forEach((atomicInteger, atomicLong) -> {
                     AtomicLong value = vote.remove(atomicInteger);
-                    stringRedisConn.hIncrBy(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(), String.valueOf(atomicInteger.get()), value.get());
+                    stringRedisConn.zIncrBy(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(),value.get(),String.valueOf(atomicInteger.get()));
                 });
                 return null;
             }
@@ -74,6 +88,5 @@ public class ViewingStatisticsManager {
         LocalDateTime localDateTime = LocalDateTime.now();
         return localDateTime.toEpochSecond(zoneOffset);
     }
-
 
 }

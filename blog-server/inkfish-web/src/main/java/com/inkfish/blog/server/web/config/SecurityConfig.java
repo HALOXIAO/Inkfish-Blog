@@ -1,7 +1,7 @@
 package com.inkfish.blog.server.web.config;
 
 import com.inkfish.blog.server.web.handler.exceptionHandler.*;
-import com.inkfish.blog.server.web.manager.UserDetailsServiceCustomer;
+import com.inkfish.blog.server.web.config.customer.UserDetailsServiceCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -13,7 +13,6 @@ import com.inkfish.blog.server.service.manager.ImageManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
-import jdk.internal.jimage.ImageReaderFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -22,8 +21,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
@@ -153,7 +150,7 @@ public class ArticleController {
     @ApiOperation(value = "首页信息", notes = "page为当前页数，最小为1，size为容量，最小为0")
     @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、")
     @GetMapping("/home")
-    public ResultBean<List<ArticleOverviewVO>> getArticle(Integer page, Integer size) {
+    public ResultBean<List<ArticleOverviewVO>> getHome(Integer page, Integer size) {
         if (page == null || size == null || page <= 0 || size < 0) {
             return new ResultBean<>("argument error", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }

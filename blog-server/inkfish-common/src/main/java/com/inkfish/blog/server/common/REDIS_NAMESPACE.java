@@ -11,10 +11,10 @@ public enum REDIS_NAMESPACE {
     //注册账号功能命名空间
     EMAIL_VERIFICATION_REGISTER_NAMESPACE("email:verification:register:"),
 
-    //文章点赞数
+    //文章点赞数 有序集合存储
     ARTICLE_INFORMATION_LIKE("article:information:vote:likesNumber"),
 
-    //文章浏览人数
+    //文章浏览人数 有序集合存储
     ARTICLE_INFORMATION_WATCH("article:information:watch:viewsNumber"),
 
     //文章已点赞用户

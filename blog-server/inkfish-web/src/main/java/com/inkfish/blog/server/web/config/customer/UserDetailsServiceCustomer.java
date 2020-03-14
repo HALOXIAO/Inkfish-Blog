@@ -1,8 +1,9 @@
-package com.inkfish.blog.server.web.manager;
+package com.inkfish.blog.server.web.config.customer;
 
 import com.google.common.collect.ImmutableList;
 import com.inkfish.blog.server.service.UserService;
 import com.inkfish.blog.server.common.util.FieldJudgement;
+import com.inkfish.blog.server.web.config.customer.UserDetailsCustomer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

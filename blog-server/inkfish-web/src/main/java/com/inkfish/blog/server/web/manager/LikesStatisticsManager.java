@@ -1,7 +1,8 @@
-package com.inkfish.blog.server.service.manager;
+package com.inkfish.blog.server.web.manager;
 
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpSession;
 /**
  * @author HALOXIAO
  **/
+@Aspect
 @Service
 public class LikesStatisticsManager {
 
@@ -28,7 +30,8 @@ public class LikesStatisticsManager {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
-    @AfterReturning("execution(*com.inkfish.blog.web.controller.ArticleController.articleLike(Integer))&&args(id)")
+
+    @AfterReturning("execution(* com.inkfish.blog.server.web.controller.ArticleController.articleLike(Integer))&&args(id) ")
     public void addLike(Integer id) {
         String username = (String) httpSession.getAttribute("name");
         //判断用户是否已投票
@@ -41,7 +44,7 @@ public class LikesStatisticsManager {
                     public Object doInRedis(RedisConnection connection) throws DataAccessException {
                         StringRedisConnection stringRedisConnection = (StringRedisConnection) connection;
                         stringRedisConnection.sAdd(REDIS_NAMESPACE.ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE.getValue() + String.valueOf(id), username);
-                        stringRedisConnection.hIncrBy(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), String.valueOf(id), 1);
+                        stringRedisConnection.zIncrBy(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), 1, String.valueOf(id));
                         return null;
                     }
                 }

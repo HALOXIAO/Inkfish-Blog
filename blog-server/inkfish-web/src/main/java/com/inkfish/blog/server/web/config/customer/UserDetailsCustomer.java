@@ -1,4 +1,4 @@
-package com.inkfish.blog.server.web.manager;
+package com.inkfish.blog.server.web.config.customer;
 
 import com.google.common.collect.ImmutableList;
 import org.springframework.security.core.GrantedAuthority;

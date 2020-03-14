@@ -24,8 +24,6 @@ public class UserBehaviorService {
     public Integer getArticleLikes(List<Object> id) {
         List<Object> list = redisTemplate.opsForHash().multiGet(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), id);
         List<Integer> lists = new LinkedList<>();
-
-
         return null;
     }
 
