@@ -13,6 +13,7 @@ import com.inkfish.blog.server.service.manager.ImageManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import jdk.internal.jimage.ImageReaderFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,6 +22,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;

@@ -45,7 +45,7 @@ public class ViewingStatisticsManager {
     public void addLikesAfterWatching(Integer id) {
         AtomicInteger articleId = new AtomicInteger(id);
         if (!vote.containsKey(articleId)) {
-            vote.put(articleId, new AtomicLong(0));
+            vote.put(articleId, new AtomicLong(1));
         } else {
             vote.get(articleId).incrementAndGet();
         }

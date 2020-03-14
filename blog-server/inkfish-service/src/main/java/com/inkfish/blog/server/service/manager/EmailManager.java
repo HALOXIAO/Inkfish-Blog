@@ -38,6 +38,10 @@ public class EmailManager {
         this.mqConfig = mqConfig;
     }
 
+    //TODO 改成异步发送
+    //TODO 可以对sendResult做一些处理
+
+
     //注意，消息幂等性完全由Consumer决定
     public void sendForgetPasswordEmail(String email, String verificationCode) throws MQClientException, RemotingException, InterruptedException, MQBrokerException {
         stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_NAMESPACE.getValue() + email, verificationCode, Duration.ofMinutes(KEY_STORE_TIME));
@@ -50,7 +54,6 @@ public class EmailManager {
         Message message = new Message("email", "forgetPassword", key, email.getBytes());
         producer.start();
         SendResult sendResult = producer.send(message);
-        //TODO 可以对sendResult做一些处理
         log.info("Type:ForgetPasswordEmail " + "key: " + key + " SendResult:" + sendResult.getSendStatus());
     }
 
@@ -66,7 +69,6 @@ public class EmailManager {
         producer.start();
         SendResult sendResult = producer.send(message);
         log.info("Type:RegisterEmail " + "key: " + key + " SendResult:" + sendResult.getSendStatus());
-        //TODO 可以对sendResult做一些处理
 
     }
 }

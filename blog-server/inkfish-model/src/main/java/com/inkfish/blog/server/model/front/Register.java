@@ -25,6 +25,8 @@ public class Register {
     @NotEmpty
     String code;
 
+
+
     public String getCode() {
         return code;
     }

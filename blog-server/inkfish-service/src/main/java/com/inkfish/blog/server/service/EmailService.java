@@ -18,19 +18,21 @@ public class EmailService {
 
     private EmailManager emailManager;
 
+    private final int VERIFICATION_LENGTH = 5;
+
     @Autowired
     public EmailService(EmailManager emailManager) {
         this.emailManager = emailManager;
     }
 
     public String registerCode(String email) throws InterruptedException, RemotingException, MQClientException, MQBrokerException {
-        String code = RandomString.make(5);
+        String code = RandomString.make(VERIFICATION_LENGTH);
         emailManager.sendRegisterEmail(email, code);
         return code;
     }
 
     public String recoverPassword(String email) throws InterruptedException, RemotingException, MQClientException, MQBrokerException {
-        String code = RandomString.make(5);
+        String code = RandomString.make(VERIFICATION_LENGTH);
         emailManager.sendForgetPasswordEmail(email, code);
         return code;
     }

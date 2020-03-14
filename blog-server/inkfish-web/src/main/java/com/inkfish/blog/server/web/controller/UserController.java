@@ -7,6 +7,7 @@ import com.inkfish.blog.server.common.SESSION_CODE;
 import com.inkfish.blog.server.common.util.CodeVerification;
 import com.inkfish.blog.server.mapper.convert.RegisterToUser;
 import com.inkfish.blog.server.model.front.Email;
+import com.inkfish.blog.server.model.front.RecoverPassword;
 import com.inkfish.blog.server.model.front.Register;
 import com.inkfish.blog.server.model.pojo.User;
 import com.inkfish.blog.server.service.EmailService;
@@ -21,14 +22,10 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -61,6 +58,8 @@ public class UserController {
     @Autowired
     EmailService emailService;
 
+    private final String VERIFICATION_CODE = "verificationCode";
+
 
     //TODO  邮箱注册
     @ApiOperation(value = "注册账号，根据邮箱注册")
@@ -74,7 +73,6 @@ public class UserController {
         if (register.getCode() != httpSession.getAttribute(SESSION_CODE.REGISTER_VERIFICATION_CODE.getValue())) {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
-        httpSession.removeAttribute(SESSION_CODE.REGISTER_VERIFICATION_CODE.getValue());
         User user = RegisterToUser.INSTANCE.from(register);
         log.info(register.toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -85,12 +83,19 @@ public class UserController {
     }
 
 
+    /**
+     * 发送注册用的邮件
+     */
     @PostMapping("/register/code")
-    public ResultBean<String> registerCode(@Valid @RequestBody Email email, BindingResult result, HttpServletResponse response, HttpServletRequest request) {
+    public ResultBean<String> registerCode(@Valid @RequestBody Email email, BindingResult result) {
         if (result.hasErrors()) {
             ResultBean<String> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
             log.warn(result.getFieldError() == null ? "No Error Information" : result.getFieldErrors().toString());
             return bean;
+        }
+        if (!email.getCode().equals(httpSession.getAttribute(VERIFICATION_CODE))) {
+            httpSession.removeAttribute(VERIFICATION_CODE);
+            return new ResultBean<>("code error", RESULT_BEAN_STATUS_CODE.CHECK_FAIL);
         }
         try {
             String code = emailService.registerCode(email.toString());
@@ -115,7 +120,7 @@ public class UserController {
         String text = defaultKaptcha.createText();
         response.setHeader("code", text);
         BufferedImage image = defaultKaptcha.createImage(text);
-        httpSession.setAttribute("verificationCode", text);
+        httpSession.setAttribute(VERIFICATION_CODE, text);
         try (ServletOutputStream outputStream = response.getOutputStream()) {
             ImageIO.write(image, "JPG", outputStream);
             outputStream.flush();
@@ -124,10 +129,19 @@ public class UserController {
     }
 
     @ApiOperation("用于验证密码，在忘记密码的情况下使用，将会验证所输入的验证码是否匹配")
-    @PostMapping("/recover/password")
-    public ResultBean<Boolean> forgetPassword(String code) {
-        if (httpSession.getAttribute(SESSION_CODE.RECOVER_VERIFICATION_CODE.getValue()).equals(code)) {
+    @PutMapping("/recover/password")
+    public ResultBean<Boolean> forgetPassword(@RequestBody @Valid RecoverPassword recoverPassword, BindingResult result) {
+        if (result.hasErrors()) {
+            ResultBean<Boolean> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+            log.warn(result.getFieldError() == null ? "No Error Information" : result.getFieldErrors().toString());
+            return bean;
+        }
+        if (!httpSession.getAttribute(SESSION_CODE.RECOVER_VERIFICATION_CODE.getValue()).equals(recoverPassword.getCode())) {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+        }
+        String email = (String) httpSession.getAttribute("email");
+        if (!userService.updatePasswordWithEmail(email, recoverPassword.getPassword())) {
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
         }
         return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
     }
@@ -141,8 +155,12 @@ public class UserController {
             log.warn(result.getFieldError() == null ? "No Error Information" : result.getFieldErrors().toString());
             return bean;
         }
+        if (!email.getCode().equals(httpSession.getAttribute(VERIFICATION_CODE))) {
+            httpSession.removeAttribute(VERIFICATION_CODE);
+            return new ResultBean<>("code fail", RESULT_BEAN_STATUS_CODE.CHECK_FAIL);
+        }
         try {
-            String code = emailService.registerCode(email.getEmail());
+            String code = emailService.recoverPassword(email.getEmail());
             httpSession.setAttribute(SESSION_CODE.RECOVER_VERIFICATION_CODE.getValue(), code);
             httpSession.setAttribute("email", email);
             ResultBean<String> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
@@ -156,7 +174,7 @@ public class UserController {
 
     @ApiOperation(value = "Github登陆")
     @PostMapping("")
-    public ResultBean<String> test(){
+    public ResultBean<String> test() {
         return null;
     }
 

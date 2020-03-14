@@ -1,5 +1,6 @@
 package com.inkfish.blog.server.service;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.inkfish.blog.server.common.exception.DBTransactionalException;
 import com.inkfish.blog.server.mapper.RoleMapper;
@@ -64,6 +65,11 @@ public class UserService {
         return true;
     }
 
+    public boolean updatePasswordWithEmail(String email, String password) {
+        User user = new User();
+        user.setPassword(password);
+        return userMapper.update(user, new UpdateWrapper<User>().eq("email", email));
+    }
 
     public List<String> searchRolenameWithUsername(String username) {
         return userMapper.searchRolenameWithUsername(username);
