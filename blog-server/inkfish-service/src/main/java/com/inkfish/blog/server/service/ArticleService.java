@@ -1,6 +1,7 @@
 package com.inkfish.blog.server.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.exception.DBTransactionalException;
 import com.inkfish.blog.server.mapper.ArticleMapper;
 import com.inkfish.blog.server.mapper.ArticleTagMapper;
@@ -13,6 +14,12 @@ import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.service.manager.ImageManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.RedisOperations;
+import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,11 +50,14 @@ public class ArticleService {
     @Autowired
     ImageManager imageManager;
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
-    public Article getArticle(Integer id){
+
+    public Article getArticle(Integer id) {
 
         return articleMapper.getOne(new QueryWrapper<Article>().select("title,overview,enable_comment,category_id,status," +
-                "content,create_time,update_time").eq("id",id));
+                "content,create_time,update_time").eq("id", id));
     }
 
 
@@ -57,7 +67,7 @@ public class ArticleService {
 
     /**
      * 当有tags时的添加文章
-     * */
+     */
     @Transactional(rollbackFor = DBTransactionalException.class)
     public boolean addArticleWithTags(Article article, List<ArticleTag> tags) {
         if (articleMapper.save(article)) {
@@ -74,8 +84,8 @@ public class ArticleService {
 
     /**
      * 根据文章的唯一id进行删除
-     * */
-    @Transactional(rollbackFor = {DBTransactionalException.class,IOException.class})
+     */
+    @Transactional(rollbackFor = {DBTransactionalException.class, IOException.class})
     public void deleteArticleById(Integer id) throws IOException {
         if (articleMapper.removeById(id)) {
             imageManager.deleteImage(id);
@@ -86,7 +96,6 @@ public class ArticleService {
         throw e;
     }
 
-
     //TODO need to check
     public List<ArticleOverviewVO> getArticleOverviewPage(Integer page, Integer size) {
         List<Article> articles = articleMapper.getBaseMapper().getArticleOverview(page, size);
@@ -94,16 +103,18 @@ public class ArticleService {
         articles.parallelStream().forEach(p -> {
             articleId.add(p.getId());
         });
+//        获取articleId与TagName的映射
         List<TagAndArticleDTO> tagAndArticleDTOList = articleTagMapper.getBaseMapper().getTagAndArticleDTO(articleId);
-        Collections.sort(tagAndArticleDTOList);
         TagAndArticleDTO dto = new TagAndArticleDTO();
         Collections.sort(tagAndArticleDTOList);
         List<ArticleOverviewVO> articleOverviewVOList = ArticleToArticleOverviewVO.INSTANCE.toArticleOverviewVOList(articles);
+//        为每一个ArticleOverview添加tags
         articleOverviewVOList.parallelStream().forEach(p -> {
             dto.setArticleId(p.getId());
-            int index = Collections.<TagAndArticleDTO>binarySearch(tagAndArticleDTOList, dto);
+            int index = Collections.binarySearch(tagAndArticleDTOList, dto);
             int base = index;
             List<String> tags = new LinkedList<>();
+//            获取排序好的tagAndArticleDTOList里index周围的符合条件的tag
             if (tagAndArticleDTOList.size() != 0) {
                 while (base + 1 != tagAndArticleDTOList.size() && tagAndArticleDTOList.get(base + 1) != null && tagAndArticleDTOList.get(base + 1).getArticleId().equals(
                         dto.getArticleId())) {
@@ -119,8 +130,29 @@ public class ArticleService {
             }
             p.setTags(tags);
         });
-        return articleOverviewVOList;
+
+        return addLikesAndWatch(articleOverviewVOList);
     }
 
+    private List<ArticleOverviewVO> addLikesAndWatch(List<ArticleOverviewVO> list) {
+
+        List<Object> result = stringRedisTemplate.executePipelined(new RedisCallback<String>() {
+            @Override
+            public String doInRedis(RedisConnection connection) throws DataAccessException {
+                for (ArticleOverviewVO overview : list) {
+                    connection.zScore(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue().getBytes(), String.valueOf(overview.getId()).getBytes());
+                    connection.zScore(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue().getBytes(), String.valueOf(overview.getId()).getBytes());
+                }
+                return null;
+            }
+        });
+        for (int i = 0; i < list.size(); i++) {
+            Double like = (Double) result.get(i);
+            Double view = (Double) result.get(i + 1);
+            list.get(i).setLikes(like.intValue());
+            list.get(i).setViews(view.intValue());
+        }
+        return list;
+    }
 
 }

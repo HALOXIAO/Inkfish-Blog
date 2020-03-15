@@ -17,8 +17,7 @@ public class Article {
     @TableField( "enable_comment")
     private Integer enableComment;
 
-    @TableField( "category_id")
-    private Integer categoryId;
+
 
     @TableField("overview")
     private String overview;
@@ -86,13 +85,6 @@ public class Article {
     }
 
 
-    public Integer getCategoryId() {
-        return this.categoryId;
-    }
-
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
 
 
 
@@ -118,7 +110,6 @@ public class Article {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", enableComment=" + enableComment +
-                ", categoryId=" + categoryId +
                 ", overview='" + overview + '\'' +
                 ", status=" + status +
                 ", content='" + content + '\'' +

@@ -92,8 +92,6 @@ public class ArticleController {
             return bean;
         }
         Article article = ArticlePushToArticle.INSTANCE.from(articleP);
-        Integer categoryId = categoryService.searchIdWithName(articleP.getCategoryName());
-        article.setCategoryId(categoryId);
         article.setCreateTime(Timestamp.valueOf(LocalDateTime.now()));
         if (!articleService.addArticle(article)) {
             log.warn("add article fail");

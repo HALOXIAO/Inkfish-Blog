@@ -19,6 +19,9 @@ public class ArticleOverviewVO {
     @ApiModelProperty("文章的前言，或者说大体内容")
     private String overview;
 
+    @ApiModelProperty("文章标题")
+    private String title;
+
     @ApiModelProperty("创建文章的时间，格式为2019-03-02")
     private Timestamp createTime;
 
@@ -33,6 +36,15 @@ public class ArticleOverviewVO {
 
     @ApiModelProperty("浏览次数")
     private Integer views;
+
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public Integer getId() {
         return id;
@@ -95,6 +107,7 @@ public class ArticleOverviewVO {
         return "ArticleOverviewVO{" +
                 "id=" + id +
                 ", overview='" + overview + '\'' +
+                ", title='" + title + '\'' +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", tags=" + tags +
@@ -102,5 +115,4 @@ public class ArticleOverviewVO {
                 ", views=" + views +
                 '}';
     }
-
 }

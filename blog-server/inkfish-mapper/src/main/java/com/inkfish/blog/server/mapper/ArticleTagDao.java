@@ -2,6 +2,7 @@ package com.inkfish.blog.server.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.inkfish.blog.server.model.dto.TagAndArticleDTO;
+import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import org.apache.ibatis.annotations.*;
 
@@ -22,5 +23,9 @@ public interface ArticleTagDao extends BaseMapper<ArticleTag> {
             @Result(property = "article_id", column = "articleId")
     })
     List<TagAndArticleDTO> getTagAndArticleDTO(@Param("idList")List<Integer> id);
+
+
+    @Select("SELECT id,title,overview,create_time,update_time FROM article WHERE article_id IN (SELECT article_id FROM article_and_tag_relation WHERE tag_id = #{tag} )")
+    List<Article> getArticleOverview(String tag);
 
 }

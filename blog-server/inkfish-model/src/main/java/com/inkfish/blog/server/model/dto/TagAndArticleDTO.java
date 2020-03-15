@@ -19,6 +19,9 @@ TagAndArticleDTO implements Comparable<TagAndArticleDTO>, Comparator<TagAndArtic
         return o1.articleId - o2.articleId;
     }
 
+    /**
+     * tagName
+     * */
     private String name;
 
     private Integer articleId;

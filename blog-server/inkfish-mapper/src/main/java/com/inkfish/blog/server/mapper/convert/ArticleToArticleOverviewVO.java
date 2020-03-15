@@ -28,7 +28,10 @@ public interface ArticleToArticleOverviewVO {
             @Mapping(source = "id", target = "id"),
             @Mapping(source = "createTime", target = "createTime"),
             @Mapping(source = "updateTime", target = "updateTime"),
-            @Mapping(target = "tags", ignore = true)
+            @Mapping(source = "title",target = "title"),
+            @Mapping(target = "tags", ignore = true),
+            @Mapping(target = "likes",ignore = true),
+            @Mapping(target = "views",ignore = true)
     })
     ArticleOverviewVO toArticle(Article article);
 }
