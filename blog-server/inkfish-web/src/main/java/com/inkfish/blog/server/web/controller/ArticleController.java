@@ -54,6 +54,7 @@ public class ArticleController {
     private StringRedisTemplate redisTemplate;
 
 
+//    TODO  将Article改为ArticleVO，并添加likes 和 views
     @ApiOperation(value = "获取文章")
     @ApiResponse(code = 200, message = "返回文章实体的所有信息")
     @GetMapping("/article")

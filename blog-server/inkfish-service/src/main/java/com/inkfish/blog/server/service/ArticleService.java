@@ -146,11 +146,13 @@ public class ArticleService {
                 return null;
             }
         });
+        int tag = 0;
         for (int i = 0; i < list.size(); i++) {
-            Double like = (Double) result.get(i);
-            Double view = (Double) result.get(i + 1);
+            Double like = (Double) result.get(tag);
+            Double view = (Double) result.get(tag+1);
             list.get(i).setLikes(like.intValue());
             list.get(i).setViews(view.intValue());
+            tag = i*2;
         }
         return list;
     }
