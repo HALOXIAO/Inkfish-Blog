@@ -31,4 +31,21 @@ public class UserBehaviorService {
         return (Integer) redisTemplate.opsForHash().get(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(), id);
     }
 
+    public Integer getArticleLikesById(Integer id) {
+        Long likes = redisTemplate.opsForZSet().rank(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), String.valueOf(id));
+        if (likes != null) {
+            return likes.intValue();
+        }
+        return null;
+    }
+
+    public Integer getArticleViewsById(Integer id) {
+        Long views = redisTemplate.opsForZSet().rank(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(), String.valueOf(id));
+        if (views != null) {
+            return views.intValue();
+        }
+        return null;
+
+    }
+
 }

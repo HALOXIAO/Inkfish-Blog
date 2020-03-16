@@ -11,6 +11,7 @@ import com.inkfish.blog.server.model.dto.TagAndArticleDTO;
 import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
+import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.manager.ImageManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-//TODO 当文章标题重复时所保存的照片的Bug
 
 /**
  * @author HALOXIAO
@@ -96,7 +96,6 @@ public class ArticleService {
         throw e;
     }
 
-    //TODO need to check
     public List<ArticleOverviewVO> getArticleOverviewPage(Integer page, Integer size) {
         List<Article> articles = articleMapper.getBaseMapper().getArticleOverview(page, size);
         List<Integer> articleId = new ArrayList<>();
@@ -131,10 +130,10 @@ public class ArticleService {
             p.setTags(tags);
         });
 
-        return addLikesAndWatch(articleOverviewVOList);
+        return addArticleOverviewVOLikesAndWatchList(articleOverviewVOList);
     }
 
-    private List<ArticleOverviewVO> addLikesAndWatch(List<ArticleOverviewVO> list) {
+    private List<ArticleOverviewVO> addArticleOverviewVOLikesAndWatchList(List<ArticleOverviewVO> list) {
 
         List<Object> result = stringRedisTemplate.executePipelined(new RedisCallback<String>() {
             @Override
@@ -156,5 +155,7 @@ public class ArticleService {
         }
         return list;
     }
+
+
 
 }

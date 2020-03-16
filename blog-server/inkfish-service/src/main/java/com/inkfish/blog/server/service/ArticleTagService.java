@@ -8,6 +8,7 @@ import com.inkfish.blog.server.model.pojo.ArticleTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,8 +36,15 @@ public class ArticleTagService {
 
     public List<Article> getArticle(String tag) {
         return articleTagMapper.getBaseMapper().getArticleOverview(tag);
+    }
 
-
+    public List<String> getTagsNameByArticleId(Integer id) {
+        List<ArticleTag> list = articleTagMapper.getBaseMapper().getTagsByArticleId(id);
+        List<String> result = new ArrayList<>(list.size());
+        list.parallelStream().forEach(p -> {
+            result.add(p.getName());
+        });
+        return result;
     }
 
 

@@ -4,11 +4,15 @@ import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.mapper.convert.ArticlePushToArticle;
+import com.inkfish.blog.server.mapper.convert.ArticleToArticleVO;
 import com.inkfish.blog.server.model.front.ArticlePush;
 import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
+import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.ArticleService;
+import com.inkfish.blog.server.service.ArticleTagService;
 import com.inkfish.blog.server.service.CategoryService;
+import com.inkfish.blog.server.service.UserBehaviorService;
 import com.inkfish.blog.server.service.manager.ImageManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,25 +51,32 @@ public class ArticleController {
     @Autowired
     private ImageManager imageManager;
 
-    @Autowired
-    private HttpSession httpSession;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
 
+    @Autowired
+    private ArticleTagService articleTagService;
 
-//    TODO  将Article改为ArticleVO，并添加likes 和 views
+    @Autowired
+    private UserBehaviorService userBehaviorService;
+
+
     @ApiOperation(value = "获取文章")
     @ApiResponse(code = 200, message = "返回文章实体的所有信息")
     @GetMapping("/article")
-    public ResultBean<Article> getArticle(@RequestParam(value = "id") Integer id) {
-        if (id == null) {
+    public ResultBean<ArticleVO> getArticle(@RequestParam(value = "id") Integer id) {
+        if (id == null || id <= 0) {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
         Article article = articleService.getArticle(id);
         article.setId(id);
-        ResultBean<Article> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-        bean.setData(article);
+        ArticleVO articleVO = ArticleToArticleVO.INSTANCE.toArticleVO(article);
+        articleVO.setTags(articleTagService.getTagsNameByArticleId(id));
+        articleVO.setVote(userBehaviorService.getArticleLikesById(id));
+        articleVO.setWatch(userBehaviorService.getArticleViewsById(id));
+        ResultBean<ArticleVO> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        bean.setData(articleVO);
         return bean;
     }
 
@@ -75,8 +86,11 @@ public class ArticleController {
     @GetMapping("/article/like")
     public ResultBean<Integer> articleLike(Integer id) {
         Integer like = (Integer) redisTemplate.opsForHash().get(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), String.valueOf(id));
+        if (like != null) {
+            like++;
+        }
         ResultBean<Integer> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-        bean.setData(like + 1);
+        bean.setData(like);
         return bean;
     }
 

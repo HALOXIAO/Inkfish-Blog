@@ -48,8 +48,14 @@ public class EmailService {
                     if (!stringRedisTemplate.hasKey(nameSpace + body)) {
                         continue;
                     }
-                    String code = stringRedisTemplate.opsForValue().get(nameSpace + body);
+                    stringRedisTemplate.multi();
+                    stringRedisTemplate.opsForValue().get(nameSpace + body);
                     stringRedisTemplate.delete(nameSpace + body);
+                    List<Object> result = stringRedisTemplate.exec();
+                    String code = (String) result.get(0);
+                    if (code == null) {
+                        break;
+                    }
                     try {
                         emailManager.sendForgetPasswordMail(body, code);
                     } catch (MessagingException e) {
@@ -72,8 +78,14 @@ public class EmailService {
                     if (!stringRedisTemplate.hasKey(nameSpace + body)) {
                         continue;
                     }
-                    String code = stringRedisTemplate.opsForValue().get(nameSpace + body);
+                    stringRedisTemplate.multi();
+                    stringRedisTemplate.opsForValue().get(nameSpace + body);
                     stringRedisTemplate.delete(nameSpace + body);
+                    List<Object> result = stringRedisTemplate.exec();
+                    String code = (String) result.get(0);
+                    if (code == null) {
+                        break;
+                    }
                     try {
                         emailManager.sendRegisterMail(body, code);
                     } catch (MessagingException e) {

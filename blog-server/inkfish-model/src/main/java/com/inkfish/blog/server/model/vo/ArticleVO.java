@@ -1,7 +1,6 @@
 package com.inkfish.blog.server.model.vo;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiParam;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -11,22 +10,43 @@ import java.util.List;
  **/
 @ApiModel("文章实体")
 public class ArticleVO {
+    private Integer id;
     private String title;
     private String content;
-    private String image;
+    private Integer status;
+    private Integer enableComment;
     private List<String> tags;
     private Integer vote;
     private Integer watch;
     private Timestamp createTime;
     private Timestamp updateTime;
 
-    public String getImage() {
-        return image;
+
+    public Integer getEnableComment() {
+        return enableComment;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setEnableComment(Integer enableComment) {
+        this.enableComment = enableComment;
     }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+
 
     public String getTitle() {
         return title;
@@ -87,9 +107,11 @@ public class ArticleVO {
     @Override
     public String toString() {
         return "ArticleVO{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
-                ", image='" + image + '\'' +
+                ", status=" + status +
+                ", enableComment=" + enableComment +
                 ", tags=" + tags +
                 ", vote=" + vote +
                 ", watch=" + watch +

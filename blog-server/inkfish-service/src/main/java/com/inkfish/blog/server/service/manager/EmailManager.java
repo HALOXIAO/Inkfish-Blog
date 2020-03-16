@@ -42,7 +42,7 @@ public class EmailManager {
     //TODO 可以对sendResult做一些处理
 
 
-    //注意，消息幂等性完全由Consumer决定
+    //注意，消息幂等性完全由Consumer操作
     public void sendForgetPasswordEmail(String email, String verificationCode) throws MQClientException, RemotingException, InterruptedException, MQBrokerException {
         stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_NAMESPACE.getValue() + email, verificationCode, Duration.ofMinutes(KEY_STORE_TIME));
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");//设置日期格式

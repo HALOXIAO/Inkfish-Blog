@@ -61,7 +61,6 @@ public class UserController {
     private final String VERIFICATION_CODE = "verificationCode";
 
 
-    //TODO  邮箱注册
     @ApiOperation(value = "注册账号，根据邮箱注册")
     @PostMapping("/register")
     public ResultBean<String> register(@Valid @RequestBody Register register, BindingResult result) {
