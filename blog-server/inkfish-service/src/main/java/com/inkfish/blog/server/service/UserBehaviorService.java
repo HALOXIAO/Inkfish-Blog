@@ -24,15 +24,6 @@ public class UserBehaviorService {
         this.redisTemplate = redisTemplate;
     }
 
-    public Integer getArticleLikes(List<Object> id) {
-        List<Object> list = redisTemplate.opsForHash().multiGet(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), id);
-        List<Integer> lists = new LinkedList<>();
-        return null;
-    }
-
-    public Integer getArticleViews(Integer id) {
-        return (Integer) redisTemplate.opsForHash().get(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(), id);
-    }
 
     public Integer getArticleLikesById(Integer id) {
         Long likes = redisTemplate.opsForZSet().rank(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), String.valueOf(id));

@@ -1,6 +1,5 @@
 package com.inkfish.blog.server.web.controller;
 
-import com.google.common.base.Objects;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;

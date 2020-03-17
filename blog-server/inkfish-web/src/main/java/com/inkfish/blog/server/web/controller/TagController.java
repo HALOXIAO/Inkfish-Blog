@@ -7,6 +7,7 @@ import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.service.ArticleTagService;
+import com.inkfish.blog.server.service.UserBehaviorService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class TagController {
     @Autowired
     ArticleTagService articleTagService;
 
+    @Autowired
+    UserBehaviorService userBehaviorService;
+
     @GetMapping("/tag/all")
     public ResultBean<List<String>> allTags() {
         List<ArticleTag> list = articleTagService.getAllTags();
@@ -49,7 +53,7 @@ public class TagController {
     @GetMapping("/tag/{tag}")
     public ResultBean<List<ArticleOverviewVO>> getTag(@PathVariable("tag") String tag) {
         List<Article> articles = articleTagService.getArticle(tag);
-        List<ArticleOverviewVO>resultList =  ArticleToArticleOverviewVO.INSTANCE.toArticleOverviewVOList(articles);
+        List<ArticleOverviewVO> resultList = ArticleToArticleOverviewVO.INSTANCE.toArticleOverviewVOList(articles);
 
         return null;
     }
