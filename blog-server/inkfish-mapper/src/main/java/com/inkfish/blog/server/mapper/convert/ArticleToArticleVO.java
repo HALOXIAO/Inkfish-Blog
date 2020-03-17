@@ -18,7 +18,6 @@ public interface ArticleToArticleVO {
     @Mappings({
             @Mapping(target = "title", source = "title"),
             @Mapping(target = "id", source = "id"),
-            @Mapping(target = "title", source = "title"),
             @Mapping(target = "content", source = "content"),
             @Mapping(target = "createTime", source = "createTime"),
             @Mapping(target = "updateTime", source = "updateTime"),

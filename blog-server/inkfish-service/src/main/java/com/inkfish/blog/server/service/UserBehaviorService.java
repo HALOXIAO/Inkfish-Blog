@@ -2,6 +2,9 @@ package com.inkfish.blog.server.service;
 
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -47,5 +50,17 @@ public class UserBehaviorService {
         return null;
 
     }
+
+    public void initArticleViewsAndLikes(Integer id) {
+        List<Object> result = redisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                connection.zAdd(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue().getBytes(), 0, id.toString().getBytes());
+                connection.zAdd(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue().getBytes(), 0, id.toString().getBytes());
+                return null;
+            }
+        });
+    }
+
 
 }

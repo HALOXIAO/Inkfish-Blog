@@ -1,5 +1,6 @@
 package com.inkfish.blog.server.web.controller;
 
+import com.google.common.base.Objects;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
@@ -11,7 +12,6 @@ import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.ArticleService;
 import com.inkfish.blog.server.service.ArticleTagService;
-import com.inkfish.blog.server.service.CategoryService;
 import com.inkfish.blog.server.service.UserBehaviorService;
 import com.inkfish.blog.server.service.manager.ImageManager;
 import io.swagger.annotations.Api;
@@ -25,7 +25,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -45,8 +44,6 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
-    @Autowired
-    private CategoryService categoryService;
 
     @Autowired
     private ImageManager imageManager;
@@ -112,6 +109,7 @@ public class ArticleController {
             log.warn("add article fail");
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
         }
+        userBehaviorService.initArticleViewsAndLikes(article.getId());
         ResultBean<Integer> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         bean.setData(article.getId());
         return bean;

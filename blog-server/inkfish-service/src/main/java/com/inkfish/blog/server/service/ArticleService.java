@@ -48,7 +48,7 @@ public class ArticleService {
     private ArticleTagMapper articleTagMapper;
 
     @Autowired
-    ImageManager imageManager;
+    private ImageManager imageManager;
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -56,7 +56,7 @@ public class ArticleService {
 
     public Article getArticle(Integer id) {
 
-        return articleMapper.getOne(new QueryWrapper<Article>().select("title,overview,enable_comment,category_id,status," +
+        return articleMapper.getOne(new QueryWrapper<Article>().select("title,overview,enable_comment,status," +
                 "content,create_time,update_time").eq("id", id));
     }
 
@@ -148,14 +148,13 @@ public class ArticleService {
         int tag = 0;
         for (int i = 0; i < list.size(); i++) {
             Double like = (Double) result.get(tag);
-            Double view = (Double) result.get(tag+1);
+            Double view = (Double) result.get(tag + 1);
             list.get(i).setLikes(like.intValue());
             list.get(i).setViews(view.intValue());
-            tag = i*2;
+            tag = i * 2;
         }
         return list;
     }
-
 
 
 }

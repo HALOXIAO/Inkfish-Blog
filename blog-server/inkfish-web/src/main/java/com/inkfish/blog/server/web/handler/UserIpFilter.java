@@ -21,9 +21,9 @@ import java.net.UnknownHostException;
  * @author HALOXIAO
  **/
 @Component
-@Order(3)
-public class UserIpFilter extends OncePerRequestFilter {
+public class UserIpFilter  {
 
+    /*
     private final StringRedisTemplate stringRedisTemplate;
 
     @Autowired
@@ -66,4 +66,5 @@ public class UserIpFilter extends OncePerRequestFilter {
             ipAddress = "";
         }
      }
+     */
 }
