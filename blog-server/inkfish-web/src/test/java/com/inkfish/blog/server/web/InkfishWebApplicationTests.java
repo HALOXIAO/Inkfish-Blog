@@ -7,14 +7,12 @@ import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 @SpringBootTest
@@ -32,18 +30,24 @@ class InkfishWebApplicationTests {
 
     @Test
     void contextLoads() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {
-        List<Object> result = stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
-            @Override
-            public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                connection.zScore("zset".getBytes(), "a".getBytes());
-                connection.zScore("zset1".getBytes(), "first".getBytes());
-                return null;
-            }
-        });
-        System.out.println(result.get(0));
-        System.out.println( result.get(1));
 
     }
 
+
 }
 
+
+class LRUCache<K, V> extends LinkedHashMap<K, V> {
+    private final int CACHE_SIZE;
+
+    public LRUCache(int size) {
+        super((int) Math.ceil(size / 0.75f) + 1, 0.75f, true);
+        CACHE_SIZE = size;
+    }
+
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+        return size() > CACHE_SIZE;
+    }
+
+}

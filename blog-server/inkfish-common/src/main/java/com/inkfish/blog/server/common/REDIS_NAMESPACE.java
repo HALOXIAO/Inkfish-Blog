@@ -18,7 +18,10 @@ public enum REDIS_NAMESPACE {
     ARTICLE_INFORMATION_WATCH("article:information:watch:viewsNumber"),
 
     //文章已点赞用户
-    ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE("article:information:alreadyLike:");
+    ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE("article:information:alreadyLike:"),
+
+    //用户IP地址  Hash
+    USER_INFORMATION_IP("user:information:ip");
 
 
 

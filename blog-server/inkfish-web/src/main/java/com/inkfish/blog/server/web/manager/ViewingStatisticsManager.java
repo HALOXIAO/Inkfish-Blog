@@ -25,6 +25,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @Aspect
 @Service
 public class ViewingStatisticsManager {
+    /**
+     * 如果访问数据量很大，可以使用HyperLogLog的方式
+     * */
 
     private StringRedisTemplate redisTemplate;
 
