@@ -43,7 +43,7 @@ public class ArticleTagService {
         return articleTagMapper.getBaseMapper().getArticleOverview(tag);
     }
 
-//    TODO need to change and fix bug of parallelStream
+    //    TODO need to change and fix bug of parallelStream
     public List<ArticleOverviewVO> setTagsForArticleOverviewVO(List<ArticleOverviewVO> list) {
         List<Integer> articlesId = new ArrayList<>(list.size());
         for (ArticleOverviewVO vo : list) {
@@ -51,26 +51,25 @@ public class ArticleTagService {
         }
         List<TagAndArticleDTO> result = articleTagMapper.getBaseMapper().getTagAndArticleDTO(articlesId);
         Collections.sort(result);
-        TagAndArticleDTO dto = new TagAndArticleDTO();
         list.parallelStream().forEach(p -> {
+            TagAndArticleDTO dto = new TagAndArticleDTO();
             dto.setArticleId(p.getId());
-            ThreadLocal<Integer> index = new ThreadLocal<>();
-            index.set(Collections.binarySearch(result, dto));
-            ThreadLocal<Integer> base = index;
-            List<String> tags = new LinkedList<>();
+
+            int index = Collections.binarySearch(result, dto);
+            int base = index;
+            List<String> tags = new ArrayList<>();
 //            获取排序好的tagAndArticleDTOList里index周围的符合条件的tag
             if (result.size() != 0) {
-
-                while (base.get() + 1 != result.size() && result.get(base.get() + 1) != null && result.get(base.get() + 1).getArticleId().equals(
+                while (base + 1 != result.size() && result.get(base + 1) != null && result.get(base + 1).getArticleId().equals(
                         dto.getArticleId())) {
-                    tags.add(result.get(base.get() + 1).getNames());
-                    base.set(base.get() + 1);
+                    tags.add(result.get(base + 1).getNames());
+                    base = base + 1;
                 }
                 base = index;
-                while (-1 != base.get() - 1 && result.get(base.get() - 1) != null && result.get(base.get() - 1).getArticleId().equals(
+                while (-1 != base - 1 && result.get(base - 1) != null && result.get(base - 1).getArticleId().equals(
                         dto.getArticleId())) {
-                    tags.add(result.get(base.get() - 1).getNames());
-                    base.set(base.get() - 1);
+                    tags.add(result.get(base - 1).getNames());
+                    base = base - 1;
                 }
             }
             p.setTags(tags);
@@ -78,7 +77,6 @@ public class ArticleTagService {
 
         return list;
     }
-
 
 
 }

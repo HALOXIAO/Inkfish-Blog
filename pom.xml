@@ -244,6 +244,7 @@
             </dependency>
 
 
+
         </dependencies>
     </dependencyManagement>
 
@@ -346,7 +347,13 @@
         <!--        </resources>-->
 
 
-    </build>
 
+    </build>
+    <repositories>
+        <repository>
+            <id>snapshots-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
 
 </project>
