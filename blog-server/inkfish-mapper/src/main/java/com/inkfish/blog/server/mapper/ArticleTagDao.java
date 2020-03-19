@@ -28,7 +28,7 @@ public interface ArticleTagDao extends BaseMapper<ArticleTag> {
     List<Article> getArticleOverview(String tag);
 
     @Select("SELECT name FROM article_tag WHERE id IN (SELECT id FROM article_and_tag_relation WHERE article_id = #{id})")
-    List<ArticleTag> getTagsByArticleId(Integer id);
+    List<ArticleTag> getTagsNameByArticleId(Integer id);
 
 
 }

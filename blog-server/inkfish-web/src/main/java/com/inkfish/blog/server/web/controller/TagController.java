@@ -11,6 +11,7 @@ import com.inkfish.blog.server.service.UserBehaviorService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.cache.RedisCache;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +36,7 @@ public class TagController {
     @Autowired
     UserBehaviorService userBehaviorService;
 
+
     @GetMapping("/tag/all")
     public ResultBean<List<String>> allTags() {
         List<ArticleTag> list = articleTagService.getAllTags();
@@ -50,8 +52,8 @@ public class TagController {
         return bean;
     }
 
-    @GetMapping("/tag/{tag}")
-    public ResultBean<List<ArticleOverviewVO>> getTag(@PathVariable("tag") String tag) {
+    @GetMapping("/tag")
+    public ResultBean<List<ArticleOverviewVO>> getTag(String tag,Integer page) {
         List<Article> articles = articleTagService.getArticle(tag);
         List<ArticleOverviewVO> resultList = ArticleToArticleOverviewVO.INSTANCE.toArticleOverviewVOList(articles);
 

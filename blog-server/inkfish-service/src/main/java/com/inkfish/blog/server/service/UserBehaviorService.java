@@ -42,6 +42,8 @@ public class UserBehaviorService {
 
     }
 
+
+
     public void initArticleViewsAndLikes(Integer id) {
         List<Object> result = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override

@@ -35,16 +35,15 @@ public class LikesStatisticsManager {
     public void addLike(Integer id) {
         String username = (String) httpSession.getAttribute("name");
         //判断用户是否已投票
-        if (stringRedisTemplate.opsForSet().isMember(String.valueOf(id), username)) {
+        if (stringRedisTemplate.opsForSet().isMember(REDIS_NAMESPACE.ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE.getValue() + String.valueOf(id), username)) {
             return;
         }
         stringRedisTemplate.executePipelined(
                 new RedisCallback<Object>() {
                     @Override
                     public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                        StringRedisConnection stringRedisConnection = (StringRedisConnection) connection;
-                        stringRedisConnection.sAdd(REDIS_NAMESPACE.ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE.getValue() + String.valueOf(id), username);
-                        stringRedisConnection.zIncrBy(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), 1, String.valueOf(id));
+                        connection.sAdd((REDIS_NAMESPACE.ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE.getValue() + String.valueOf(id)).getBytes(), username.getBytes());
+                        connection.zIncrBy(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue().getBytes(), 1, String.valueOf(id).getBytes());
                         return null;
                     }
                 }

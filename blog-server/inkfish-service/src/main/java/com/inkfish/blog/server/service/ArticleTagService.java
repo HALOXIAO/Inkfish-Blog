@@ -35,6 +35,19 @@ public class ArticleTagService {
         return articleTagMapper.remove(new QueryWrapper<ArticleTag>().eq("name", name));
     }
 
+    public List<String> getTagsNameByArticleId(Integer id) {
+        List<ArticleTag> list = articleTagMapper.getBaseMapper().getTagsNameByArticleId(id);
+        if (list == null) {
+            return null;
+        }
+        ArrayList<String> result = new ArrayList<>(list.size());
+        list.stream().forEach(tag -> {
+            result.add(tag.getName());
+        });
+        return result;
+    }
+
+
     public List<ArticleTag> getAllTags() {
         return articleTagMapper.list(new QueryWrapper<ArticleTag>().select("name"));
     }

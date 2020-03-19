@@ -54,6 +54,18 @@ public class ArticleService {
     private StringRedisTemplate stringRedisTemplate;
 
 
+    public void cleanLikesAndWatch(Integer id) {
+        stringRedisTemplate.executePipelined(new RedisCallback<String>() {
+            @Override
+            public String doInRedis(RedisConnection connection) throws DataAccessException {
+                connection.zRem(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue().getBytes(), String.valueOf(id).getBytes());
+                connection.zRem(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue().getBytes(), String.valueOf(id).getBytes());
+                connection.del(REDIS_NAMESPACE.ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE.getValue().getBytes());
+                return null;
+            }
+        });
+    }
+
     public Article getArticle(Integer id) {
 
         return articleMapper.getOne(new QueryWrapper<Article>().select("title,overview,enable_comment,status," +

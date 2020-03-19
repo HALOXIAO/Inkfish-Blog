@@ -24,6 +24,8 @@ public class AdminPanelController {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
+
+
     @GetMapping("/admin/information/likes")
     public ResultBean<List<PanelLikesVO>> getLikes() {
         Set<ZSetOperations.TypedTuple<String>> likes = stringRedisTemplate.opsForZSet().rangeByScoreWithScores(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), -10, -1);

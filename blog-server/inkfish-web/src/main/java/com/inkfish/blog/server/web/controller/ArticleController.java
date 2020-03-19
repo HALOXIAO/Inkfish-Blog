@@ -1,5 +1,11 @@
 package com.inkfish.blog.server.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONReader;
+import com.alibaba.fastjson.parser.DefaultJSONParser;
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.spi.Module;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
@@ -18,6 +24,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -28,6 +36,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +66,9 @@ public class ArticleController {
     @Autowired
     private UserBehaviorService userBehaviorService;
 
+    private final String DATE_PATTERN = "yyyy-MM-dd";
 
+    @Cacheable(value = "cache:article:information", key = "#id")
     @ApiOperation(value = "获取文章")
     @ApiResponse(code = 200, message = "返回文章实体的所有信息")
     @GetMapping("/article")
@@ -71,6 +82,8 @@ public class ArticleController {
         articleVO.setTags(articleTagService.getTagsNameByArticleId(id));
         articleVO.setVote(userBehaviorService.getArticleLikesById(id));
         articleVO.setWatch(userBehaviorService.getArticleViewsById(id));
+        articleVO.setCreateTime(article.getCreateTime().toLocalDateTime().format(DateTimeFormatter.ofPattern(DATE_PATTERN)));
+        articleVO.setUpdateTime(article.getUpdateTime().toLocalDateTime().format(DateTimeFormatter.ofPattern(DATE_PATTERN)));
         ResultBean<ArticleVO> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         bean.setData(articleVO);
         return bean;
@@ -114,6 +127,7 @@ public class ArticleController {
         return bean;
     }
 
+    @CacheEvict(value = "article:cache:information", key = "#id")
     @ApiResponse(code = 200, message = "有可能返回的Code：成功、未知异常、未登录、无权限")
     @DeleteMapping("/article")
     @PreAuthorize("hasAnyRole('ROLE_ROOT')")
@@ -124,6 +138,7 @@ public class ArticleController {
             log.error(e.getMessage());
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
         }
+        articleService.cleanLikesAndWatch(id);
         return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
 
     }
