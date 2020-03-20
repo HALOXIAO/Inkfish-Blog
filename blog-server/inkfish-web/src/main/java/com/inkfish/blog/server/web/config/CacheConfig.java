@@ -1,5 +1,6 @@
 package com.inkfish.blog.server.web.config;
 
+import com.inkfish.blog.server.common.ResultBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.cache.CacheManager;
@@ -29,9 +30,8 @@ public class CacheConfig {
     @Bean
     public RedisTemplate<String, Serializable> redisCacheTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Serializable> template = new RedisTemplate<>();
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        template.setKeySerializer(jackson2JsonRedisSerializer);
-        template.setValueSerializer(jackson2JsonRedisSerializer);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         template.setConnectionFactory(redisConnectionFactory);
         return template;
     }
@@ -41,8 +41,8 @@ public class CacheConfig {
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         // 配置序列化
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
-        config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()));
-        RedisCacheConfiguration redisCacheConfiguration = config.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+        RedisCacheConfiguration redisCacheConfiguration = config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer())).serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<ResultBean>(ResultBean.class)));
+
         return RedisCacheManager.builder(factory).cacheDefaults(redisCacheConfiguration).build();
     }
 

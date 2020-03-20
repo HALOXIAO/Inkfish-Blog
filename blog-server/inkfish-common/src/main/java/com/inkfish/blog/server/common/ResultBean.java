@@ -9,7 +9,9 @@ import java.io.Serializable;
  * @author HALOXIAO
  **/
 @Data
-public class ResultBean<T> implements Serializable {
+public class ResultBean<T>  implements Serializable {
+    private static final long serialVersionUID = 2L;
+
 
     /**
      * 返回的信息(主要出错的时候使用)

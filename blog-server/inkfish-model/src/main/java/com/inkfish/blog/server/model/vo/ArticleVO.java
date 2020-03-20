@@ -10,7 +10,10 @@ import java.util.List;
  * @author HALOXIAO
  **/
 @ApiModel("文章实体")
-public class ArticleVO implements Serializable {
+public class ArticleVO implements Serializable{
+    private static final long serialVersionUID = 2L;
+
+
     private Integer id;
     private String title;
     private String content;
@@ -46,7 +49,6 @@ public class ArticleVO implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-
 
 
     public String getTitle() {

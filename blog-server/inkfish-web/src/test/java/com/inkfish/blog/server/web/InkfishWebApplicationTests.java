@@ -1,7 +1,10 @@
 package com.inkfish.blog.server.web;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +17,7 @@ import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.junit.jupiter.api.Test;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,8 +25,13 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static com.alibaba.fastjson.JSON.parseObject;
 
 
 @SpringBootTest
@@ -39,10 +48,9 @@ class InkfishWebApplicationTests {
     StringRedisTemplate stringRedisTemplate;
 
     @Test
-    void contextLoads() throws JsonProcessingException {
+    void contextLoads() throws JsonProcessingException, IOException {
         String content = stringRedisTemplate.opsForValue().get(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue() + 14);
-        ObjectMapper mapper = new ObjectMapper();
-        GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(mapper);
+
     }
 
 

@@ -31,10 +31,10 @@ public class GlobalExceptionHandler {
         return new ResultBean<String>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResultBean<String> ExceptionHandle(Exception e) {
-        log.error(e.getMessage());
-        return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResultBean<String> ExceptionHandle(Exception e) {
+//        log.error(e.getMessage());
+//        return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+//    }
 
 }
