@@ -6,6 +6,7 @@ import com.inkfish.blog.server.mapper.convert.ArticleToArticleOverviewVO;
 import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
+import com.inkfish.blog.server.service.ArticleService;
 import com.inkfish.blog.server.service.ArticleTagService;
 import com.inkfish.blog.server.service.UserBehaviorService;
 import io.swagger.annotations.Api;
@@ -36,6 +37,8 @@ public class TagController {
     @Autowired
     UserBehaviorService userBehaviorService;
 
+    @Autowired
+    ArticleService articleService;
 
     @GetMapping("/tag/all")
     public ResultBean<List<String>> allTags() {
@@ -52,12 +55,16 @@ public class TagController {
         return bean;
     }
 
+//    TODO 添加Page
     @GetMapping("/tag")
     public ResultBean<List<ArticleOverviewVO>> getTag(String tag,Integer page) {
         List<Article> articles = articleTagService.getArticle(tag);
         List<ArticleOverviewVO> resultList = ArticleToArticleOverviewVO.INSTANCE.toArticleOverviewVOList(articles);
-
-        return null;
+        resultList = articleTagService.setTagsForArticleOverviewVO(resultList);
+        resultList = articleService.addArticleOverviewVOLikesAndWatchList(resultList);
+        ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        bean.setData(resultList);
+        return bean;
     }
 
 }

@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
+import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
+import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.ArticleTagService;
 import org.apache.rocketmq.client.exception.MQBrokerException;
@@ -49,8 +51,8 @@ class InkfishWebApplicationTests {
 
     @Test
     void contextLoads() throws JsonProcessingException, IOException {
-        String content = stringRedisTemplate.opsForValue().get(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue() + 14);
-
+        ResultBean<ArticleVO> bean = new ResultBean<>("", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+        System.out.println(bean.toString());
     }
 
 

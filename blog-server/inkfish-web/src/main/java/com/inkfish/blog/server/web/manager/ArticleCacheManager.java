@@ -6,6 +6,7 @@ import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.model.vo.ArticleVO;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class ArticleCacheManager {
     }
 
     @Before("execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)")
-    public void articleCache(Integer id) throws IOException {
+    public void getArticleCache(Integer id) throws IOException {
         HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
         Boolean tag = stringRedisTemplate.hasKey(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue() + id);
         if (null != tag && tag) {
@@ -45,7 +46,8 @@ public class ArticleCacheManager {
             response.setCharacterEncoding("utf-8");
             response.setStatus(200);
             response.setHeader("Content-Type", "application/json");
-            ResultBean<ArticleVO> bean = JSON.parseObject(content, new TypeReference<ResultBean<ArticleVO>>() {});
+            ResultBean<ArticleVO> bean = JSON.parseObject(content, new TypeReference<ResultBean<ArticleVO>>() {
+            });
             Double like = stringRedisTemplate.opsForZSet().score(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), id.toString());
             Double view = stringRedisTemplate.opsForZSet().score(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(), id.toString());
             if (like != null) {
@@ -60,4 +62,11 @@ public class ArticleCacheManager {
             }
         }
     }
+
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
+    public void updateArticleCache(Integer id, ResultBean<ArticleVO> bean) {
+        stringRedisTemplate.opsForValue().set(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue(), JSON.toJSON(bean).toString());
+    }
+
+
 }

@@ -68,6 +68,10 @@ public class ArticleController {
 
     private final String DATE_PATTERN = "yyyy-MM-dd";
 
+
+    /**
+     * 已经添加了Cache支持
+     */
     @ApiOperation(value = "获取文章")
     @ApiResponse(code = 200, message = "返回文章实体的所有信息")
     @GetMapping("/article")
@@ -93,7 +97,7 @@ public class ArticleController {
     @PreAuthorize("hasAnyRole('ROLE_ROOT','ROLE_NORMAL')")
     @GetMapping("/article/like")
     public ResultBean<Integer> articleLike(Integer id) {
-        Double like =  redisTemplate.opsForZSet().score(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), String.valueOf(id));
+        Double like = redisTemplate.opsForZSet().score(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), String.valueOf(id));
         if (like != null) {
             like++;
         }
@@ -180,6 +184,7 @@ public class ArticleController {
         }
         page--;
         List<ArticleOverviewVO> list = articleService.getArticleOverviewPage(page, size);
+        list = articleService.addArticleOverviewVOLikesAndWatchList(list);
         ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         bean.setData(list);
         return bean;

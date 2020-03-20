@@ -142,10 +142,10 @@ public class ArticleService {
             p.setTags(tags);
         });
 
-        return addArticleOverviewVOLikesAndWatchList(articleOverviewVOList);
+        return articleOverviewVOList;
     }
 
-    private List<ArticleOverviewVO> addArticleOverviewVOLikesAndWatchList(List<ArticleOverviewVO> list) {
+    public List<ArticleOverviewVO> addArticleOverviewVOLikesAndWatchList(List<ArticleOverviewVO> list) {
 
         List<Object> result = stringRedisTemplate.executePipelined(new RedisCallback<String>() {
             @Override
