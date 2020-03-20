@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.StringRedisConnection;
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * @author HALOXIAO
  **/
+@Order(1)
 @Aspect
 @Service
 public class ViewingStatisticsManager {

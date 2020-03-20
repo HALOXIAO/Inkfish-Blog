@@ -1,5 +1,12 @@
 package com.inkfish.blog.server.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.inkfish.blog.server.common.ResultBean;
+import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.ArticleTagService;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -29,7 +36,13 @@ class InkfishWebApplicationTests {
     StringRedisTemplate stringRedisTemplate;
 
     @Test
-    void contextLoads() throws InterruptedException, RemotingException, MQClientException, MQBrokerException {
+    void contextLoads() throws JsonProcessingException {
+        String cache = stringRedisTemplate.opsForValue().get("cache:article:information::14");
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(cache);
+        JsonNode result = jsonNode.get("data").get("watch");
+        System.out.println(result.asText());
+
 
     }
 
