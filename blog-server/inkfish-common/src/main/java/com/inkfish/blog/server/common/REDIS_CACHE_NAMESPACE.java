@@ -5,7 +5,7 @@ package com.inkfish.blog.server.common;
  **/
 public enum  REDIS_CACHE_NAMESPACE {
 
-//    Article Cache
+//    Article Cache String
     ARTICLE_CACHE_NAMESPACE("cache:article:information::");
 
 

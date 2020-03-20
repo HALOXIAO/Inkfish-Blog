@@ -3,11 +3,13 @@ package com.inkfish.blog.server.common;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author HALOXIAO
  **/
 @Data
-public class ResultBean<T> {
+public class ResultBean<T> implements Serializable {
 
     /**
      * 返回的信息(主要出错的时候使用)

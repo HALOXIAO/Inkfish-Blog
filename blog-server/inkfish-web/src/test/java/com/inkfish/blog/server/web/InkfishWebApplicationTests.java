@@ -1,10 +1,12 @@
 package com.inkfish.blog.server.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.ArticleTagService;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
@@ -37,13 +40,9 @@ class InkfishWebApplicationTests {
 
     @Test
     void contextLoads() throws JsonProcessingException {
-        String cache = stringRedisTemplate.opsForValue().get("cache:article:information::14");
+        String content = stringRedisTemplate.opsForValue().get(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue() + 14);
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = mapper.readTree(cache);
-        JsonNode result = jsonNode.get("data").get("watch");
-        System.out.println(result.asText());
-
-
+        GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(mapper);
     }
 
 

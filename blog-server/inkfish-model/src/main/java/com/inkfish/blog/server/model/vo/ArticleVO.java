@@ -2,6 +2,7 @@ package com.inkfish.blog.server.model.vo;
 
 import io.swagger.annotations.ApiModel;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * @author HALOXIAO
  **/
 @ApiModel("文章实体")
-public class ArticleVO {
+public class ArticleVO implements Serializable {
     private Integer id;
     private String title;
     private String content;

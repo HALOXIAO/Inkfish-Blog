@@ -1,5 +1,10 @@
 package com.inkfish.blog.server.web.manager;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.ObjectCodec;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -22,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
  **/
 @Order(2)
 @Component
-@Aspect
 public class ArticleCacheManager {
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -33,10 +37,13 @@ public class ArticleCacheManager {
     }
 
     @Around("execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)")
-    public ResultBean<ArticleVO> articleCache(ProceedingJoinPoint pjp, Integer id) {
+    public ResultBean<ArticleVO> articleCache(ProceedingJoinPoint pjp, Integer id) throws JsonProcessingException {
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
 
-
+        String resultBean = stringRedisTemplate.opsForValue().get(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue());
+        ObjectMapper mapper = new ObjectMapper();
+        TreeNode node = mapper.readTree(resultBean);
+        node.traverse();
         return null;
     }
 
