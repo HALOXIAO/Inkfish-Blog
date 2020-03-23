@@ -15,6 +15,7 @@ import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import sun.nio.ch.DirectBuffer;
 
 import javax.mail.MessagingException;
 import java.nio.charset.StandardCharsets;

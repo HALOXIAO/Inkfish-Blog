@@ -1,6 +1,9 @@
 package com.inkfish.blog.server.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.inkfish.blog.server.mapper.ArticleTagMapper;
 import com.inkfish.blog.server.model.dto.TagAndArticleDTO;
 import com.inkfish.blog.server.model.pojo.Article;
@@ -27,6 +30,9 @@ public class ArticleTagService {
     @Autowired
     ArticleTagMapper articleTagMapper;
 
+    @Autowired
+    PaginationInterceptor iPage;
+
     public boolean addTags(List<ArticleTag> tags) {
         return articleTagMapper.saveBatch(tags);
     }
@@ -48,8 +54,10 @@ public class ArticleTagService {
     }
 
 
-    public List<ArticleTag> getAllTags() {
-        return articleTagMapper.list(new QueryWrapper<ArticleTag>().select("name"));
+    //TODO
+    public IPage<ArticleTag> getTagsNameWithPage(Integer page) {
+        Page<ArticleTag> ipage = new Page<>(page, 10);
+        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name"));
     }
 
     public List<Article> getArticle(String tag) {

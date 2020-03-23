@@ -13,6 +13,12 @@ public class ArticlePush {
 
 
     @ApiModelProperty(
+            required = false,
+            value = "文章Id"
+    )
+    private Integer id;
+
+    @ApiModelProperty(
             required = true,
             value = "文章标题，范围:1-40"
     )
@@ -65,6 +71,14 @@ public class ArticlePush {
     private String content;
 
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return this.title;
     }
@@ -113,10 +127,12 @@ public class ArticlePush {
         this.overview = overview;
     }
 
+
     @Override
     public String toString() {
         return "ArticlePush{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", enableComment=" + enableComment +
                 ", categoryName='" + categoryName + '\'' +
                 ", overview='" + overview + '\'' +

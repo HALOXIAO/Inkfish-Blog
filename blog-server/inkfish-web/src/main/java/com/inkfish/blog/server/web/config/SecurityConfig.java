@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.logout().logoutUrl("/logout").permitAll().logoutSuccessHandler(logoutSuccessHandlerImp)
@@ -59,6 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable().authorizeRequests().antMatchers("/login", "/logout", "/register", "/verification", "/home").permitAll();
         http.exceptionHandling().authenticationEntryPoint(noLoginHandler).accessDeniedHandler(accessDeniedHandlerImp);
         http.authorizeRequests().antMatchers(HttpMethod.OPTIONS).permitAll();
+//        http.oauth2Login().loginPage("/login/github").successHandler(loginSuccessHandler);
     }
 
     @Override

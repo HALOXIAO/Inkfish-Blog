@@ -1,5 +1,6 @@
 package com.inkfish.blog.server.web.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.mapper.convert.ArticleToArticleOverviewVO;
@@ -41,8 +42,9 @@ public class TagController {
     ArticleService articleService;
 
     @GetMapping("/tag/all")
-    public ResultBean<List<String>> allTags() {
-        List<ArticleTag> list = articleTagService.getAllTags();
+    public ResultBean<List<String>> allTags(Integer page) {
+        IPage<ArticleTag> ipage =articleTagService.getTagsNameWithPage(page);
+        List<ArticleTag> list = ipage.getRecords();
         if (list == null) {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
         }
@@ -55,9 +57,9 @@ public class TagController {
         return bean;
     }
 
-//    TODO 添加Page
+    //    TODO 添加Page
     @GetMapping("/tag")
-    public ResultBean<List<ArticleOverviewVO>> getTag(String tag,Integer page) {
+    public ResultBean<List<ArticleOverviewVO>> getTag(String tag) {
         List<Article> articles = articleTagService.getArticle(tag);
         List<ArticleOverviewVO> resultList = ArticleToArticleOverviewVO.INSTANCE.toArticleOverviewVOList(articles);
         resultList = articleTagService.setTagsForArticleOverviewVO(resultList);

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
+import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -31,7 +32,6 @@ public class ArticleCacheManager {
 
     private final StringRedisTemplate stringRedisTemplate;
 
-
     @Autowired
     public ArticleCacheManager(StringRedisTemplate stringRedisTemplate) {
         this.stringRedisTemplate = stringRedisTemplate;
@@ -48,6 +48,7 @@ public class ArticleCacheManager {
             response.setHeader("Content-Type", "application/json");
             ResultBean<ArticleVO> bean = JSON.parseObject(content, new TypeReference<ResultBean<ArticleVO>>() {
             });
+            //TODO PipeLine
             Double like = stringRedisTemplate.opsForZSet().score(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), id.toString());
             Double view = stringRedisTemplate.opsForZSet().score(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(), id.toString());
             if (like != null) {
@@ -65,7 +66,9 @@ public class ArticleCacheManager {
 
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
     public void updateArticleCache(Integer id, ResultBean<ArticleVO> bean) {
-        stringRedisTemplate.opsForValue().set(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue(), JSON.toJSON(bean).toString());
+        if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
+            stringRedisTemplate.opsForValue().set(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue(), JSON.toJSON(bean).toString());
+        }
     }
 
 

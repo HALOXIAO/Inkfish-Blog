@@ -1,6 +1,7 @@
 package com.inkfish.blog.server.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.exception.DBTransactionalException;
 import com.inkfish.blog.server.mapper.ArticleMapper;
@@ -168,5 +169,8 @@ public class ArticleService {
         return list;
     }
 
+    public boolean updateArticle(Article article, Integer id) {
+        return articleMapper.update(article, new UpdateWrapper<Article>().eq("id", id));
+    }
 
 }

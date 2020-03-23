@@ -6,6 +6,7 @@ import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.spi.Module;
+import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
@@ -25,6 +26,7 @@ import io.swagger.annotations.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -80,6 +82,9 @@ public class ArticleController {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
         Article article = articleService.getArticle(id);
+        if (article == null) {
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+        }
         article.setId(id);
         ArticleVO articleVO = ArticleToArticleVO.INSTANCE.toArticleVO(article);
         articleVO.setTags(articleTagService.getTagsNameByArticleId(id));
@@ -106,6 +111,7 @@ public class ArticleController {
         return bean;
     }
 
+    @CachePut(unless = "#result.code!=200", value = "article:cache:information",key = "#result.data.intValue()")
     @ApiOperation(value = "发布或更新文章")
     @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、无权限")
     @PostMapping("/article")
@@ -118,16 +124,28 @@ public class ArticleController {
             }
             return bean;
         }
-        Article article = ArticlePushToArticle.INSTANCE.from(articleP);
-        article.setCreateTime(Timestamp.valueOf(LocalDateTime.now()));
-        if (!articleService.addArticle(article)) {
-            log.warn("add article fail");
-            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+        //判断是发布文章还是更新文章
+        if (articleP.getId() == null) {
+            Article article = ArticlePushToArticle.INSTANCE.from(articleP);
+            Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
+            article.setCreateTime(timestamp);
+            article.setUpdateTime(timestamp);
+            if (!articleService.addArticle(article)) {
+                log.warn("add article fail");
+                return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+            }
+            userBehaviorService.initArticleViewsAndLikes(article.getId());
+            ResultBean<Integer> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+            bean.setData(article.getId());
+            return bean;
+        } else {
+            Article article = ArticlePushToArticle.INSTANCE.from(articleP);
+            article.setUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
+            if (!articleService.updateArticle(article, articleP.getId())) {
+                return new ResultBean<>("some thing error", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+            }
+            return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         }
-        userBehaviorService.initArticleViewsAndLikes(article.getId());
-        ResultBean<Integer> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-        bean.setData(article.getId());
-        return bean;
     }
 
     @CacheEvict(value = "article:cache:information", key = "#id")

@@ -61,6 +61,7 @@ public class UserController {
     private final String VERIFICATION_CODE = "verificationCode";
 
 
+//    TODO 通过布隆过滤器，验证名字是否存在
     @ApiOperation(value = "注册账号，根据邮箱注册")
     @PostMapping("/register")
     public ResultBean<String> register(@Valid @RequestBody Register register, BindingResult result) {
@@ -70,7 +71,7 @@ public class UserController {
             return bean;
         }
         if (register.getCode() != httpSession.getAttribute(SESSION_CODE.REGISTER_VERIFICATION_CODE.getValue())) {
-            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.CHECK_FAIL);
         }
         User user = RegisterToUser.INSTANCE.from(register);
         log.info(register.toString());
@@ -158,6 +159,7 @@ public class UserController {
             httpSession.removeAttribute(VERIFICATION_CODE);
             return new ResultBean<>("code fail", RESULT_BEAN_STATUS_CODE.CHECK_FAIL);
         }
+//        TODO 判断邮箱是否存在，通过布隆过滤器
         try {
             String code = emailService.recoverPassword(email.getEmail());
             httpSession.setAttribute(SESSION_CODE.RECOVER_VERIFICATION_CODE.getValue(), code);
@@ -174,6 +176,13 @@ public class UserController {
     @ApiOperation(value = "Github登陆")
     @PostMapping("")
     public ResultBean<String> test() {
+        return null;
+    }
+
+
+    @ApiOperation(value = "判断用户名是否已注册",notes = "")
+    @GetMapping("/verification/username")
+    public ResultBean<Boolean>containName(String username){
         return null;
     }
 
