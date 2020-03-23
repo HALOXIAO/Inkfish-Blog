@@ -144,7 +144,9 @@ public class ArticleController {
             if (!articleService.updateArticle(article, articleP.getId())) {
                 return new ResultBean<>("some thing error", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
             }
-            return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+            ResultBean<Integer> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+            bean.setData(articleP.getId());
+            return bean;
         }
     }
 
@@ -194,6 +196,7 @@ public class ArticleController {
 
 
 //    TODO 动态页数
+
     /**
      * 已添加Cache支持
      */

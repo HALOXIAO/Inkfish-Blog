@@ -81,10 +81,10 @@ public class ArticleCacheManager {
 
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer)) &&args(id)", returning = "bean", argNames = "id,bean")
     public void updateHomeCache(Integer id, ResultBean<List<ArticleOverviewVO>> bean) {
-        ConcurrentHashMap<Integer, ArticleVO> map = new ConcurrentHashMap<>(bean.getData().size());
+        float initialCapacity = (bean.getData().size() / 0.75f + 1);
+        ConcurrentHashMap<Integer, ArticleVO> map = new ConcurrentHashMap<>((int) initialCapacity);
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             bean.getData().parallelStream().forEach(articleOverviewVO -> {
-
             });
 
         }
