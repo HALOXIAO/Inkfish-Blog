@@ -6,6 +6,7 @@ import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
+import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,7 +21,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author HALOXIAO
@@ -71,5 +74,20 @@ public class ArticleCacheManager {
         }
     }
 
+    @Before("execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer)) &&args(id)")
+    public void getHomeCache(Integer id) {
+        stringRedisTemplate.opsForHash();
+    }
 
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer)) &&args(id)", returning = "bean", argNames = "id,bean")
+    public void updateHomeCache(Integer id, ResultBean<List<ArticleOverviewVO>> bean) {
+        ConcurrentHashMap<Integer, ArticleVO> map = new ConcurrentHashMap<>(bean.getData().size());
+        if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
+            bean.getData().parallelStream().forEach(articleOverviewVO -> {
+
+            });
+
+        }
+
+    }
 }
