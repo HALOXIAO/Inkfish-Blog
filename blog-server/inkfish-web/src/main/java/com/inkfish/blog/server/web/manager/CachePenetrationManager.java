@@ -34,7 +34,7 @@ public class CachePenetrationManager {
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
     public void getArticleCachePenetration(Integer id, ResultBean<ArticleVO> bean) {
         if (RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION.getValue() == bean.getCode()) {
-            stringRedisTemplate.opsForValue().set(REDIS_CACHE_NAMESPACE.ARTICLE_CACHE_NAMESPACE.getValue() + id, JSON.toJSON(bean).toString(), ARTICLE_EXPIRE_TIME);
+            stringRedisTemplate.opsForValue().set(REDIS_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_NAMESPACE.getValue() + id, JSON.toJSON(bean).toString(), ARTICLE_EXPIRE_TIME);
         }
     }
 

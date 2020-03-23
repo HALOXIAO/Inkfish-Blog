@@ -117,11 +117,11 @@ public class ArticleService {
         });
 //        获取articleId与TagName的映射
         List<TagAndArticleDTO> tagAndArticleDTOList = articleTagMapper.getBaseMapper().getTagAndArticleDTO(articleId);
-        TagAndArticleDTO dto = new TagAndArticleDTO();
         Collections.sort(tagAndArticleDTOList);
         List<ArticleOverviewVO> articleOverviewVOList = ArticleToArticleOverviewVO.INSTANCE.toArticleOverviewVOList(articles);
 //        为每一个ArticleOverview添加tags
         articleOverviewVOList.parallelStream().forEach(p -> {
+            TagAndArticleDTO dto = new TagAndArticleDTO();
             dto.setArticleId(p.getId());
             int index = Collections.binarySearch(tagAndArticleDTOList, dto);
             int base = index;

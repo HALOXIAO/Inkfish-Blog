@@ -6,10 +6,11 @@ package com.inkfish.blog.server.common;
 public enum REDIS_CACHE_NAMESPACE {
 
     //    Article Cache String
-    ARTICLE_CACHE_NAMESPACE("cache:article:information::"),
+    CACHE_ARTICLE_INFORMATION_NAMESPACE("cache:article:information::"),
 
-    //    Article Home Cache Hash
-    ARTICLE_HOME_CACHE_NAMESPACE("cache:article:home:information:");
+    //    Article Home Cache Sorted Set
+    CACHE_ARTICLE_HOME_OVERVIEW("cache:article:home:overview");
+
     private final String value;
 
     REDIS_CACHE_NAMESPACE(String value) {
