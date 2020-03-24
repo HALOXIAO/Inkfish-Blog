@@ -2,14 +2,12 @@ package com.inkfish.blog.server.web.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
-import com.inkfish.blog.server.common.REDIS_NAMESPACE;
-import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
-import com.inkfish.blog.server.common.ResultBean;
+import com.inkfish.blog.server.common.*;
 import com.inkfish.blog.server.mapper.convert.ArticlePushToArticleVO;
 import com.inkfish.blog.server.model.front.ArticlePush;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.model.vo.ArticleVO;
+import com.inkfish.blog.server.service.UserBehaviorService;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -33,10 +31,7 @@ import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
@@ -48,6 +43,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class ArticleCacheManager {
 
     private final StringRedisTemplate stringRedisTemplate;
+    private final UserBehaviorService userBehaviorService;
 
     protected final Duration ARTICLE_EXPIRE_TIME = Duration.ofDays(1);
 
@@ -55,7 +51,8 @@ public class ArticleCacheManager {
 
 
     @Autowired
-    public ArticleCacheManager(StringRedisTemplate stringRedisTemplate) {
+    public ArticleCacheManager(StringRedisTemplate stringRedisTemplate, UserBehaviorService userBehaviorService) {
+        this.userBehaviorService = userBehaviorService;
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
@@ -154,8 +151,15 @@ public class ArticleCacheManager {
                 article.setId(bean.getData());
                 article.setUpdateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN)));
                 article.setCreateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN)));
+                Map<VOTE_LIKES, Integer> map = userBehaviorService.getArticleLikesAndViewsById(articleP.getId());
+                article.setWatch(map.get(VOTE_LIKES.WATCH.getValue()));
+                article.setVote(map.get(VOTE_LIKES.VOTE.getValue()));
+                Set<ZSetOperations.TypedTuple<String>> set = new HashSet<>(4);
+//                set.add(new DefaultTypedTuple<>())
+//                stringRedisTemplate.opsForZSet().add(REDIS_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(),)
             } else {
 //        更新文章
+
 
             }
 
