@@ -139,25 +139,27 @@ public class ArticleCacheManager {
 
 
     @Pointcut("execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle(articleP)) &&args(articleP)")
-    public void publishArticle(ArticlePush articleP) {
-    }
+    public void publishArticle(ArticlePush articleP) {}
 
+//TODO EnableComment、草稿 判断
     @AfterReturning(value = "publishArticle(articleP)", returning = "bean", argNames = "articleP,bean")
     public void changeHomeCache(ArticlePush articleP, ResultBean<Integer> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
 //        发布文章
             if (null == articleP.getId()) {
+                Integer id = bean.getData();
+                //TODO ArticleOverviewVO
                 ArticleVO article = ArticlePushToArticleVO.INSTANCE.from(articleP);
-                article.setId(bean.getData());
+                article.setId(id);
                 article.setUpdateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN)));
                 article.setCreateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN)));
-                Map<VOTE_LIKES, Integer> map = userBehaviorService.getArticleLikesAndViewsById(articleP.getId());
+                Map<VOTE_LIKES, Integer> map = userBehaviorService.getArticleLikesAndViewsById(id);
                 article.setWatch(map.get(VOTE_LIKES.WATCH.getValue()));
                 article.setVote(map.get(VOTE_LIKES.VOTE.getValue()));
-                Set<ZSetOperations.TypedTuple<String>> set = new HashSet<>(4);
-//                set.add(new DefaultTypedTuple<>())
-//                stringRedisTemplate.opsForZSet().add(REDIS_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(),)
-            } else {
+                ResultBean<ArticleVO> resultBean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+                resultBean.setData(article);
+                stringRedisTemplate.opsForZSet().add(REDIS_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), JSON.toJSON(resultBean).toString(), id.doubleValue());
+           }  else {
 //        更新文章
 
 
