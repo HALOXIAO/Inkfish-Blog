@@ -6,12 +6,14 @@ import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
+import com.inkfish.blog.server.mapper.convert.ArticlePushToArticleVO;
 import com.inkfish.blog.server.model.front.ArticlePush;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
@@ -28,6 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -43,6 +48,11 @@ import java.util.concurrent.ConcurrentSkipListSet;
 public class ArticleCacheManager {
 
     private final StringRedisTemplate stringRedisTemplate;
+
+    protected final Duration ARTICLE_EXPIRE_TIME = Duration.ofDays(1);
+
+    protected final String DATE_PATTERN = "yyyy-MM-dd";
+
 
     @Autowired
     public ArticleCacheManager(StringRedisTemplate stringRedisTemplate) {
@@ -83,10 +93,11 @@ public class ArticleCacheManager {
 
     }
 
+
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
     public void updateArticleCache(Integer id, ResultBean<ArticleVO> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
-            stringRedisTemplate.opsForValue().set(REDIS_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_NAMESPACE.getValue(), JSON.toJSON(bean).toString());
+            stringRedisTemplate.opsForValue().set(REDIS_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_NAMESPACE.getValue(), JSON.toJSON(bean).toString(), ARTICLE_EXPIRE_TIME);
         }
     }
 
@@ -129,9 +140,34 @@ public class ArticleCacheManager {
         }
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle()) &&args(articleP)", returning = "bean", argNames = "articleP,bean")
-    public void changeHomeCache(ArticlePush articleP, ResultBean<String> bean) {
 
+    @Pointcut("execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle(articleP)) &&args(articleP)")
+    public void publishArticle(ArticlePush articleP) {
     }
 
+    @AfterReturning(value = "publishArticle(articleP)", returning = "bean", argNames = "articleP,bean")
+    public void changeHomeCache(ArticlePush articleP, ResultBean<Integer> bean) {
+        if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
+//        发布文章
+            if (null == articleP.getId()) {
+                ArticleVO article = ArticlePushToArticleVO.INSTANCE.from(articleP);
+                article.setId(bean.getData());
+                article.setUpdateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN)));
+                article.setCreateTime(LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN)));
+            } else {
+//        更新文章
+
+            }
+
+        }
+    }
+
+    @AfterReturning(value = "publishArticle(articleP)", returning = "bean", argNames = "articleP,bean")
+    public void deleteArticleCache(ArticlePush articleP, ResultBean<Integer> bean) {
+        if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
+            if (null != articleP.getId()) {
+                stringRedisTemplate.delete(REDIS_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_NAMESPACE.getValue() + articleP.getId());
+            }
+        }
+    }
 }

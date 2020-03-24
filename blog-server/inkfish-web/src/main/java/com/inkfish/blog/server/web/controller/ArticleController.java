@@ -68,7 +68,7 @@ public class ArticleController {
     @Autowired
     private UserBehaviorService userBehaviorService;
 
-    private final String DATE_PATTERN = "yyyy-MM-dd";
+    protected final String DATE_PATTERN = "yyyy-MM-dd";
 
 
     /**
@@ -111,7 +111,9 @@ public class ArticleController {
         return bean;
     }
 
-    @CachePut(unless = "#result.code!=200", value = "article:cache:information", key = "#result.data.intValue()")
+    /**
+     * 已添加Cache
+     * */
     @ApiOperation(value = "发布或更新文章")
     @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、无权限")
     @PostMapping("/article")
