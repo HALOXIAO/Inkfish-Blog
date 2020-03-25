@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -29,8 +30,8 @@ import java.util.Objects;
 @Component
 public class CommentValidationManager {
 
-    private final StringRedisTemplate stringRedisTemplate;
-    private final ArticleService articleService;
+    private  StringRedisTemplate stringRedisTemplate;
+    private  ArticleService articleService;
 
     @Autowired
     public CommentValidationManager(StringRedisTemplate stringRedisTemplate, ArticleService articleService) {
@@ -38,8 +39,8 @@ public class CommentValidationManager {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
-    @Before(value = "execution(* com.inkfish.blog.server.web.controller.CommentController.pushComment(articleComment) )", argNames = "articleComment")
-    public void ArticleStatusCheck(ArticleComment articleComment) throws IOException {
+    @Before(value = "execution(* com.inkfish.blog.server.web.controller.CommentController.pushComment())&&args(articleComment)")
+    public void articleStatusCheck(ArticleComment articleComment) throws IOException {
         Integer enableComment = (Integer) stringRedisTemplate.opsForHash().get(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_COMMENT_STATUS_INFORMATION.getValue(), articleComment.getArticleId());
 
         if (enableComment == null) {

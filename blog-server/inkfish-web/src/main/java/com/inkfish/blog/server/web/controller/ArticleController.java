@@ -25,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -58,6 +59,7 @@ public class ArticleController {
 
     @Autowired
     private UserBehaviorService userBehaviorService;
+
 
     protected final String DATE_PATTERN = "yyyy-MM-dd";
 
@@ -104,7 +106,7 @@ public class ArticleController {
 
     /**
      * 已添加Cache
-     * */
+     */
     @ApiOperation(value = "发布或更新文章")
     @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、无权限")
     @PostMapping("/article")
@@ -195,9 +197,8 @@ public class ArticleController {
     @ApiOperation(value = "首页信息", notes = "page为当前页数，最小为1，size为容量，最小为0")
     @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、")
     @GetMapping("/home")
-    public ResultBean<List<ArticleOverviewVO>> getHome(Integer page) {
-        Integer size = 10;
-        if (page == null || size == null || page <= 0 || size < 0) {
+    public ResultBean<List<ArticleOverviewVO>> getHome(Integer page, Integer size) {
+        if (page == null || size == null || page <= 0 || size < 0 || !verifySize(size)) {
             return new ResultBean<>("argument error", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
         page--;
@@ -208,7 +209,9 @@ public class ArticleController {
         return bean;
     }
 
-
+    private boolean verifySize(Integer size) {
+        return size < 20;
+    }
 
 
 /*

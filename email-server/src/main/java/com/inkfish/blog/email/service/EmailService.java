@@ -1,8 +1,8 @@
 package com.inkfish.blog.email.service;
 
 import com.inkfish.blog.email.config.MqConfig;
-import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.email.service.manager.EmailManager;
+import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
@@ -15,7 +15,6 @@ import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import sun.nio.ch.DirectBuffer;
 
 import javax.mail.MessagingException;
 import java.nio.charset.StandardCharsets;

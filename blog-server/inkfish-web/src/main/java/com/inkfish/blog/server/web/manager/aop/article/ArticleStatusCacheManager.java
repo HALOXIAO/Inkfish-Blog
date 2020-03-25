@@ -14,15 +14,13 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
  * @author HALOXIAO
  **/
 
-@Aspect
-@Order(1)
+@Order(2)
 @Component
+@Aspect
 public class ArticleStatusCacheManager {
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -32,7 +30,7 @@ public class ArticleStatusCacheManager {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle(articlePush))", returning = "bean", argNames = "articlePush,bean")
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articlePush)", returning = "bean", argNames = "articlePush,bean")
     public void updateArticleStatus(ArticlePush articlePush, ResultBean<Integer> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
@@ -44,6 +42,22 @@ public class ArticleStatusCacheManager {
                 }
             });
         }
+    }
+
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.deleteArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
+    public void deleteArticleStatus(Integer id, ResultBean<String> bean) {
+
+        if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
+            stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    connection.hDel(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_STATUS_INFORMATION.getValue().getBytes(), id.toString().getBytes());
+                    connection.hDel(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_COMMENT_STATUS_INFORMATION.getValue().getBytes(), id.toString().getBytes());
+                    return null;
+                }
+            });
+        }
+
     }
 
 

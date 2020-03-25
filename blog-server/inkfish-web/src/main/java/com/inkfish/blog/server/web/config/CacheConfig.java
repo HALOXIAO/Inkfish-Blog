@@ -28,7 +28,6 @@ import java.io.Serializable;
 @EnableCaching
 public class CacheConfig {
 
-    @PostConstruct
 
     @Bean
     public RedisTemplate<String, Serializable> redisCacheTemplate(LettuceConnectionFactory redisConnectionFactory) {

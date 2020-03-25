@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.inkfish.blog.server.common.*;
 import com.inkfish.blog.server.mapper.convert.ArticlePushToArticleOverviewVO;
-import com.inkfish.blog.server.mapper.convert.ArticlePushToArticleVO;
 import com.inkfish.blog.server.model.front.ArticlePush;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.model.vo.ArticleVO;
+import com.inkfish.blog.server.service.ArticleTagService;
 import com.inkfish.blog.server.service.UserBehaviorService;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,13 +38,14 @@ import java.util.concurrent.ConcurrentSkipListSet;
 /**
  * @author HALOXIAO
  **/
-@Order(1)
 @Component
 @Aspect
+@Order(2)
 public class ArticleCacheManager {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final UserBehaviorService userBehaviorService;
+    private final ArticleTagService articleTagService;
 
     protected final Duration ARTICLE_EXPIRE_TIME = Duration.ofDays(1);
 
@@ -53,7 +53,8 @@ public class ArticleCacheManager {
 
 
     @Autowired
-    public ArticleCacheManager(StringRedisTemplate stringRedisTemplate, UserBehaviorService userBehaviorService) {
+    public ArticleCacheManager(StringRedisTemplate stringRedisTemplate, UserBehaviorService userBehaviorService, ArticleTagService articleTagService) {
+        this.articleTagService = articleTagService;
         this.userBehaviorService = userBehaviorService;
         this.stringRedisTemplate = stringRedisTemplate;
     }
@@ -100,10 +101,10 @@ public class ArticleCacheManager {
         }
     }
 
-    @Before("execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer)) &&args(id)")
-    public void getHomeCache(Integer id) throws IOException {
-        Integer num = id * 10;
-        Set<String> result = stringRedisTemplate.opsForZSet().reverseRange(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), num - 10, num - 1);
+    @Before(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer)) &&args(page,size)", argNames = "page,size")
+    public void getHomeCache(Integer page, Integer size) throws IOException {
+        int num = page * size;
+        Set<String> result = stringRedisTemplate.opsForZSet().reverseRange(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), num - size, num - 1);
         if (null != result) {
             HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
             List<ArticleOverviewVO> list = new LinkedList<>();
@@ -121,8 +122,8 @@ public class ArticleCacheManager {
         }
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer)) &&args(id)", returning = "bean", argNames = "id,bean")
-    public void updateHomeCache(Integer id, ResultBean<List<ArticleOverviewVO>> bean) {
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome())", returning = "bean", argNames = "bean")
+    public void addHomeCache(ResultBean<List<ArticleOverviewVO>> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             ConcurrentSkipListSet<ZSetOperations.TypedTuple<String>> set = new ConcurrentSkipListSet<>();
             bean.getData().parallelStream().forEach(articleOverviewVO -> {
@@ -144,35 +145,30 @@ public class ArticleCacheManager {
     public void publishArticle(ArticlePush articleP) {
     }
 
-    @AfterReturning(value = "publishArticle(articleP)", returning = "bean", argNames = "articleP,bean")
-    public void changeHomeCache(ArticlePush articleP, ResultBean<Integer> bean) {
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articleP)", returning = "bean", argNames = "articleP,bean")
+    public void updateHomeCache(ArticlePush articleP, ResultBean<Integer> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
-//        发布文章
-            if (null == articleP.getId()) {
-                Integer id = bean.getData();
-                //TODO ArticleOverviewVO
-                articleP.setId(id);
-                ArticleOverviewVO overviewVO = ArticlePushToArticleOverviewVO.INSTANCE.from(articleP);
-                String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN));
+            Integer id = bean.getData();
+            articleP.setId(id);
+            ArticleOverviewVO overviewVO = ArticlePushToArticleOverviewVO.INSTANCE.from(articleP);
+            String now = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE_PATTERN));
+            if (articleP.getId() == null) {
                 overviewVO.setUpdateTime(now);
                 overviewVO.setCreateTime(now);
-                Map<VOTE_LIKES, Integer> map = userBehaviorService.getArticleLikesAndViewsById(id);
-                overviewVO.setViews(map.get(VOTE_LIKES.WATCH.getValue()));
-                overviewVO.setLikes(map.get(VOTE_LIKES.VOTE.getValue()));
-                ResultBean<ArticleOverviewVO> resultBean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-                resultBean.setData(overviewVO);
-                stringRedisTemplate.opsForZSet().add(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), JSON.toJSON(resultBean).toString(), id.doubleValue());
             } else {
-//        更新文章
-                Integer id = bean.getData();
-
-
+//                        TODO createTime bug
             }
-
+            Map<VOTE_LIKES, Integer> map = userBehaviorService.getArticleLikesAndViewsById(id);
+            overviewVO.setViews(map.get(VOTE_LIKES.WATCH.getValue()));
+            overviewVO.setLikes(map.get(VOTE_LIKES.VOTE.getValue()));
+            overviewVO.setTags(articleTagService.getTagsNameByArticleId(id));
+            ResultBean<ArticleOverviewVO> resultBean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+            resultBean.setData(overviewVO);
+            stringRedisTemplate.opsForZSet().add(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), JSON.toJSON(resultBean).toString(), id.doubleValue());
         }
     }
 
-    @AfterReturning(value = "publishArticle(articleP)", returning = "bean", argNames = "articleP,bean")
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articleP)", returning = "bean", argNames = "articleP,bean")
     public void deleteArticleCache(ArticlePush articleP, ResultBean<Integer> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             if (null != articleP.getId()) {
@@ -180,4 +176,5 @@ public class ArticleCacheManager {
             }
         }
     }
+
 }

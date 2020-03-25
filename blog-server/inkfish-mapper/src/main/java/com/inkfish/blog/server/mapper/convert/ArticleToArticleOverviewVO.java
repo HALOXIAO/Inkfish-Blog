@@ -19,19 +19,18 @@ public interface ArticleToArticleOverviewVO {
     ArticleToArticleOverviewVO INSTANCE = Mappers.getMapper(ArticleToArticleOverviewVO.class);
 
 
-
     List<ArticleOverviewVO> toArticleOverviewVOList(List<Article> article);
 
 
     @Mappings({
             @Mapping(source = "overview", target = "overview"),
             @Mapping(source = "id", target = "id"),
-            @Mapping(source = "createTime", target = "createTime"),
-            @Mapping(source = "updateTime", target = "updateTime"),
-            @Mapping(source = "title",target = "title"),
+            @Mapping(source = "title", target = "title"),
+            @Mapping(target = "createTime", dateFormat = "yyyy-MM-dd"),
+            @Mapping(target = "updateTime", dateFormat = "yyyy-MM-dd"),
             @Mapping(target = "tags", ignore = true),
-            @Mapping(target = "likes",ignore = true),
-            @Mapping(target = "views",ignore = true)
+            @Mapping(target = "likes", ignore = true),
+            @Mapping(target = "views", ignore = true)
     })
     ArticleOverviewVO toArticle(Article article);
 }
