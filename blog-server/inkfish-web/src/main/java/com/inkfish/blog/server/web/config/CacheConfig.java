@@ -17,6 +17,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import javax.annotation.PostConstruct;
 import java.io.Serializable;
 
 /**
@@ -26,6 +27,8 @@ import java.io.Serializable;
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 @EnableCaching
 public class CacheConfig {
+
+    @PostConstruct
 
     @Bean
     public RedisTemplate<String, Serializable> redisCacheTemplate(LettuceConnectionFactory redisConnectionFactory) {

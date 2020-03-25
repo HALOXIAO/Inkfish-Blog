@@ -1,7 +1,7 @@
 package com.inkfish.blog.server.web.manager;
 
 import com.alibaba.fastjson.JSON;
-import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
+import com.inkfish.blog.server.common.REDIS_ARTICLE_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.model.vo.ArticleVO;
@@ -34,7 +34,7 @@ public class CachePenetrationManager {
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
     public void getArticleCachePenetration(Integer id, ResultBean<ArticleVO> bean) {
         if (RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION.getValue() == bean.getCode()) {
-            stringRedisTemplate.opsForValue().set(REDIS_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_NAMESPACE.getValue() + id, JSON.toJSON(bean).toString(), ARTICLE_EXPIRE_TIME);
+            stringRedisTemplate.opsForValue().set(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_NAMESPACE.getValue() + id, JSON.toJSON(bean).toString(), ARTICLE_EXPIRE_TIME);
         }
     }
 

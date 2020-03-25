@@ -23,10 +23,10 @@ public class ArticleOverviewVO {
     private String title;
 
     @ApiModelProperty("创建文章的时间，格式为2019-03-02")
-    private Timestamp createTime;
+    private String createTime;
 
     @ApiModelProperty("更新文章的时间，格式为2019-03-02")
-    private Timestamp updateTime;
+    private String updateTime;
 
     @ApiModelProperty("文章的标签")
     private List<String> tags;
@@ -37,14 +37,6 @@ public class ArticleOverviewVO {
     @ApiModelProperty("浏览次数")
     private Integer views;
 
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public Integer getId() {
         return id;
@@ -62,19 +54,27 @@ public class ArticleOverviewVO {
         this.overview = overview;
     }
 
-    public Timestamp getCreateTime() {
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(Timestamp createTime) {
+    public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
 
-    public Timestamp getUpdateTime() {
+    public String getUpdateTime() {
         return updateTime;
     }
 
-    public void setUpdateTime(Timestamp updateTime) {
+    public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
     }
 
@@ -108,8 +108,8 @@ public class ArticleOverviewVO {
                 "id=" + id +
                 ", overview='" + overview + '\'' +
                 ", title='" + title + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
+                ", createTime='" + createTime + '\'' +
+                ", updateTime='" + updateTime + '\'' +
                 ", tags=" + tags +
                 ", likes=" + likes +
                 ", views=" + views +

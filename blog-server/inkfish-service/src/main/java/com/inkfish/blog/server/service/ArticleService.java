@@ -173,4 +173,12 @@ public class ArticleService {
         return articleMapper.update(article, new UpdateWrapper<Article>().eq("id", id));
     }
 
+    public Integer getCommentStatus(Integer id) {
+        Article article = articleMapper.getOne(new QueryWrapper<Article>().select("status").eq("id", id));
+        if (article == null) {
+            return -99;
+        }
+        return article.getStatus();
+    }
+
 }

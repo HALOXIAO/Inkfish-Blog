@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface ArticleDao extends BaseMapper<Article> {
 
-    @Select("SELECT id,title,overview,status FROM  article LIMIT #{page},#{size}")
+    @Select("SELECT id,title,overview,status FROM  article WHERE status = 1 LIMIT #{page},#{size} ")
     List<Article> getArticleOverview(Integer page, Integer size);
 
 }

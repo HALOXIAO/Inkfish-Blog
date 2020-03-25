@@ -1,6 +1,7 @@
 package com.inkfish.blog.server.model.dto;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * @author HALOXIAO
@@ -43,6 +44,23 @@ TagAndArticleDTO implements Comparable<TagAndArticleDTO>, Comparator<TagAndArtic
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TagAndArticleDTO that = (TagAndArticleDTO) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(articleId, that.articleId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, articleId);
+    }
 
     @Override
     public String toString() {

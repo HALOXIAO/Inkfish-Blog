@@ -1,6 +1,5 @@
 package com.inkfish.blog.server.service;
 
-import com.inkfish.blog.server.common.REDIS_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
 import com.inkfish.blog.server.common.VOTE_LIKES;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 

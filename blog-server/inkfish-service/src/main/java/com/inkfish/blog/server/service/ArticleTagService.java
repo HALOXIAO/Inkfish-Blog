@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author HALOXIAO
@@ -47,29 +49,28 @@ public class ArticleTagService {
             return null;
         }
         ArrayList<String> result = new ArrayList<>(list.size());
-        list.stream().forEach(tag -> {
+        list.forEach(tag -> {
             result.add(tag.getName());
         });
         return result;
     }
 
 
-    //TODO
     public IPage<ArticleTag> getTagsNameWithPage(Integer page) {
         Page<ArticleTag> ipage = new Page<>(page, 10);
-        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name"));
+        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name").eq("status", 1));
     }
 
     public List<Article> getArticle(String tag) {
         return articleTagMapper.getBaseMapper().getArticleOverview(tag);
     }
 
-    //    TODO need to change and fix bug of parallelStream
     public List<ArticleOverviewVO> setTagsForArticleOverviewVO(List<ArticleOverviewVO> list) {
         List<Integer> articlesId = new ArrayList<>(list.size());
         for (ArticleOverviewVO vo : list) {
             articlesId.add(vo.getId());
         }
+//        只是Get操作，不会有并发安全性
         List<TagAndArticleDTO> result = articleTagMapper.getBaseMapper().getTagAndArticleDTO(articlesId);
         Collections.sort(result);
         list.parallelStream().forEach(p -> {
