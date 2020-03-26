@@ -91,26 +91,9 @@ public class ArticleService {
                 return false;
             }
         }
-        addArticleCount();
+        countMapper.addArticleCount();
         return true;
     }
-
-    @Transactional(rollbackFor = DBTransactionalException.class,propagation = Propagation.REQUIRED)
-    void addArticleCount() {
-        if (!countMapper.getBaseMapper().articleIncre()) {
-            throw new DBTransactionalException("inc article total error");
-        }
-
-    }
-
-    @Transactional(rollbackFor = DBTransactionalException.class,propagation = Propagation.REQUIRED)
-    void addTagCount(){
-        if(!countMapper.getBaseMapper().tagIncre()){
-            throw new DBTransactionalException("inc tag total error");
-        }
-    }
-
-
 
 
 
@@ -141,6 +124,7 @@ public class ArticleService {
     @Transactional(rollbackFor = {DBTransactionalException.class, IOException.class})
     public void deleteArticleById(Integer id) throws IOException {
         if (articleMapper.removeById(id)) {
+            countMapper.decrArticleCount();
             imageManager.deleteImage(id);
             return;
         }
