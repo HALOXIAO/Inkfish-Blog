@@ -100,5 +100,9 @@ public class ArticleTagService {
         return list;
     }
 
+//    TODO 专门更新ArticleTag的接口
+    public boolean updateArticleTag(Integer articleId, List<String> tagsName) {
+        return false;
+    }
 
 }

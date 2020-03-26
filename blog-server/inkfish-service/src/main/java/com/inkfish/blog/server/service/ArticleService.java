@@ -100,14 +100,6 @@ public class ArticleService {
     }
 
 
-    private boolean updateTagStoreCache(List<String> tags) {
-
-        return true;
-    }
-
-
-//    TODO AOP更改
-
     /**
      * 当有tags时的添加文章
      */
@@ -142,6 +134,7 @@ public class ArticleService {
             return false;
         }
     }
+
 
 //    TODO 优化：可以开一个线程来单独执行
     protected void updateExistTag(List<String> tagsName) {

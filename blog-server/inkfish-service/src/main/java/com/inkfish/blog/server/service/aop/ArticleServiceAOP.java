@@ -34,7 +34,7 @@ public class ArticleServiceAOP {
     }
 
     @AfterReturning(value = "execution(* com.inkfish.blog.server.service.ArticleService.addArticleWithTags(article,tags))&&args(article,tags)", returning = "flag", argNames = "article,tags,flag")
-    public void updateTag(Article article, List<ArticleTag> tags, boolean flag) {
+    public void updateTagCount(Article article, List<ArticleTag> tags, boolean flag) {
         if (flag) {
 
         } else {

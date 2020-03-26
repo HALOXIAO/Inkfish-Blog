@@ -3,6 +3,7 @@ package com.inkfish.blog.server.service.utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.inkfish.blog.server.common.REDIS_TAG_CACHE_NAMESPACE;
 import com.inkfish.blog.server.mapper.ArticleTagMapper;
+import com.inkfish.blog.server.mapper.CountMapper;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.service.ArticleTagService;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -21,10 +22,12 @@ public class ArticleServiceUtils {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final ArticleTagMapper articleTagMapper;
+    private final CountMapper countMapper;
 
-    public ArticleServiceUtils(StringRedisTemplate stringRedisTemplate, ArticleTagMapper articleTagMapper) {
+    public ArticleServiceUtils(StringRedisTemplate stringRedisTemplate, ArticleTagMapper articleTagMapper,CountMapper countMapper) {
         this.articleTagMapper = articleTagMapper;
         this.stringRedisTemplate = stringRedisTemplate;
+        this.countMapper = countMapper;
     }
 
     /**
@@ -67,6 +70,9 @@ public class ArticleServiceUtils {
             }
         });
         return exTags;
+    }
+
+    public void addTagsCount(int size){
     }
 
 
