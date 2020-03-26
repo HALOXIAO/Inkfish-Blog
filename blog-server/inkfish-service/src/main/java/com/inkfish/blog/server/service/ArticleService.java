@@ -120,7 +120,7 @@ public class ArticleService {
     }
 
     /**
-     *判断tags是否在DB中
+     * 判断tags是否在DB中
      */
     private List<String> checkTagsIsMemberInDB(List<ArticleTag> tags) {
         List<ArticleTag> list = articleTagMapper.list(new QueryWrapper<ArticleTag>().select("name"));
@@ -142,6 +142,7 @@ public class ArticleService {
     }
 
 
+//    TODO AOP更改
     /**
      * 当有tags时的添加文章
      */
@@ -162,6 +163,8 @@ public class ArticleService {
                 return tag;
             }
         });
+
+
         if (articleMapper.save(article) && articleTagMapper.saveBatch(newTags)) {
             Integer id = article.getId();
             if (articleTagRelationMapper.getBaseMapper().addArticleTagRelation(id, tags)) {

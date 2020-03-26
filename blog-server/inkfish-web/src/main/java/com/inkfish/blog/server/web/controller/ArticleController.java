@@ -104,6 +104,8 @@ public class ArticleController {
         return bean;
     }
 
+
+//    TODO 发布文章时，如果是新的Tag，则进行添加Tag操作
     /**
      * 已添加Cache
      */
@@ -145,6 +147,7 @@ public class ArticleController {
         }
     }
 
+    //    TODO 删除文章时，如果是最后一个Tag，则需要删除Tag
     @CacheEvict(value = "article:cache:information", key = "#id")
     @ApiResponse(code = 200, message = "有可能返回的Code：成功、未知异常、未登录、无权限")
     @DeleteMapping("/article")
@@ -191,6 +194,7 @@ public class ArticleController {
 
 
 //    TODO 动态页数
+
     /**
      * 已添加Cache支持
      */
