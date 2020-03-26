@@ -7,6 +7,7 @@ import com.inkfish.blog.server.common.exception.DBTransactionalException;
 import com.inkfish.blog.server.mapper.ArticleMapper;
 import com.inkfish.blog.server.mapper.ArticleTagMapper;
 import com.inkfish.blog.server.mapper.ArticleTagRelationMapper;
+import com.inkfish.blog.server.mapper.CountMapper;
 import com.inkfish.blog.server.mapper.convert.ArticleToArticleOverviewVO;
 import com.inkfish.blog.server.model.dto.TagAndArticleDTO;
 import com.inkfish.blog.server.model.pojo.Article;
@@ -23,7 +24,9 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,6 +57,9 @@ public class ArticleService {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    private CountMapper countMapper;
+
 
     public void cleanLikesAndWatch(Integer id) {
         stringRedisTemplate.executePipelined(new RedisCallback<String>() {
@@ -74,9 +80,40 @@ public class ArticleService {
     }
 
 
+    @Transactional(rollbackFor = DBTransactionalException.class)
     public boolean addArticle(Article article) {
-        return articleMapper.save(article);
+        if (!articleMapper.save(article)) {
+            try {
+                throw new DBTransactionalException("");
+            } catch (DBTransactionalException e) {
+                log.error(e.getMessage());
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return false;
+            }
+        }
+        addArticleCount();
+        return true;
     }
+
+    @Transactional(rollbackFor = DBTransactionalException.class,propagation = Propagation.REQUIRED)
+    void addArticleCount() {
+        if (!countMapper.getBaseMapper().articleIncre()) {
+            throw new DBTransactionalException("inc article total error");
+        }
+
+    }
+
+    @Transactional(rollbackFor = DBTransactionalException.class,propagation = Propagation.REQUIRED)
+    void addTagCount(){
+        if(!countMapper.getBaseMapper().tagIncre()){
+            throw new DBTransactionalException("inc tag total error");
+        }
+    }
+
+
+
+
+
 
     /**
      * 当有tags时的添加文章
@@ -89,10 +126,13 @@ public class ArticleService {
                 return true;
             }
         }
-
-        DBTransactionalException e = new DBTransactionalException("add Article error");
-        log.error(e.getMessage());
-        throw e;
+        try {
+            throw new DBTransactionalException("add Article error");
+        } catch (DBTransactionalException e) {
+            log.error(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().isRollbackOnly();
+            return false;
+        }
     }
 
     /**
