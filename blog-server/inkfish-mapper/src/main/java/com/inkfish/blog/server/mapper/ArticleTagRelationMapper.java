@@ -25,7 +25,7 @@ public class ArticleTagRelationMapper extends ServiceImpl<ArticleTagRelationDao,
                 INSERT_INTO("article_and_tag_relation (article_id,tag_id)");
                 StringBuffer buffer = new StringBuffer("SELECT ");
                 buffer.append(articleId).append(",id FROM article_tag WHERE name IN (");
-                tags.parallelStream().forEach(
+                tags.stream().forEach(
                         p -> {
                             buffer.append(p.getName()).append(",");
                         }

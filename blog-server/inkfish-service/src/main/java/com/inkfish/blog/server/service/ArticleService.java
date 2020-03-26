@@ -112,7 +112,7 @@ public class ArticleService {
     public List<ArticleOverviewVO> getArticleOverviewPage(Integer page, Integer size) {
         List<Article> articles = articleMapper.getBaseMapper().getArticleOverview(page, size);
         List<Integer> articleId = new ArrayList<>();
-        articles.parallelStream().forEach(p -> {
+        articles.stream().forEach(p -> {
             articleId.add(p.getId());
         });
 //        获取articleId与TagName的映射
@@ -120,7 +120,7 @@ public class ArticleService {
         Collections.sort(tagAndArticleDTOList);
         List<ArticleOverviewVO> articleOverviewVOList = ArticleToArticleOverviewVO.INSTANCE.toArticleOverviewVOList(articles);
 //        为每一个ArticleOverview添加tags
-        articleOverviewVOList.parallelStream().forEach(p -> {
+        articleOverviewVOList.stream().forEach(p -> {
             TagAndArticleDTO dto = new TagAndArticleDTO();
             dto.setArticleId(p.getId());
             int index = Collections.binarySearch(tagAndArticleDTOList, dto);

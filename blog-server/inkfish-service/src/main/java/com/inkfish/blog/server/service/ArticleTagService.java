@@ -73,7 +73,7 @@ public class ArticleTagService {
 //        只是Get操作，不会有并发安全性
         List<TagAndArticleDTO> result = articleTagMapper.getBaseMapper().getTagAndArticleDTO(articlesId);
         Collections.sort(result);
-        list.parallelStream().forEach(p -> {
+        list.stream().forEach(p -> {
             TagAndArticleDTO dto = new TagAndArticleDTO();
             dto.setArticleId(p.getId());
 

@@ -22,7 +22,7 @@ public class CommentService {
     public List<ArticleComment> getCommentWithPage(Integer articleId, Integer page, Integer size) {
         List<ArticleComment> lists = articleCommentMapper.getBaseMapper().getCommentPageWithArticle(articleId, page, size);
         if(lists!= null){
-            lists.parallelStream().forEach(p->{p.setArticleId(articleId);});
+            lists.stream().forEach(p->{p.setArticleId(articleId);});
             return lists;
         }
         return null;

@@ -126,7 +126,7 @@ public class ArticleCacheManager {
     public void addHomeCache(ResultBean<List<ArticleOverviewVO>> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             ConcurrentSkipListSet<ZSetOperations.TypedTuple<String>> set = new ConcurrentSkipListSet<>();
-            bean.getData().parallelStream().forEach(articleOverviewVO -> {
+            bean.getData().stream().forEach(articleOverviewVO -> {
                 set.add(new DefaultTypedTuple<>((String) JSON.toJSON(articleOverviewVO), articleOverviewVO.getId().doubleValue()));
             });
             stringRedisTemplate.opsForZSet().add(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), set);

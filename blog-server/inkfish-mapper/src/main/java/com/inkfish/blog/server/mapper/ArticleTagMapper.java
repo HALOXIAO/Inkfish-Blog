@@ -21,7 +21,7 @@ public class ArticleTagMapper extends ServiceImpl<ArticleTagDao, ArticleTag> {
             {
                 StringBuffer stringBuffer = new StringBuffer("a.name ,b.article_id FROM article_tag a,article_and_tag_relation b WHERE a.id = b.tag_id AND b.article_id IN ");
                 stringBuffer.append("(");
-                id.parallelStream().forEach(p -> {
+                id.stream().forEach(p -> {
                     stringBuffer.append(p);
                     stringBuffer.append(",");
                 });
