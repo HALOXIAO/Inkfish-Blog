@@ -107,23 +107,36 @@ public class ArticleService {
         if (result.isEmpty()) {
             return null;
         } else {
-
             List<String> new_tag = new ArrayList<>();
             for (int i = 0; i < result.size(); i++) {
                 Object tag = result.get(i);
                 if (!((boolean) tag)) {
-                    new_tag.add(tags.get(i));
+                    new_tag.add(tags.get(i).getName());
                 }
             }
             return new_tag;
         }
-        return null;
     }
 
     private List<String> checkTagsIsMemberInDB(List<ArticleTag> tags) {
-
-        return  null;
+        List<ArticleTag> list = articleTagMapper.list(new QueryWrapper<ArticleTag>().select("name"));
+        List<String> tagNames = list.stream().map(ArticleTag::getName).collect(Collectors.toList());
+        HashSet<String> set = new HashSet<>((int) ((list.size() / 0.75f) + 1));
+        set.addAll(tagNames);
+        List<String> exTags = new ArrayList<>();
+        tagNames.forEach(name -> {
+            if (set.add(name)) {
+                exTags.add(name);
+            }
+        });
+        return exTags;
     }
+
+    private boolean updateTagStoreCache(List<String> tags){
+
+        return true;
+    }
+
 
     /**
      * 当有tags时的添加文章
@@ -131,12 +144,21 @@ public class ArticleService {
     @Transactional(rollbackFor = DBTransactionalException.class)
     public boolean addArticleWithTags(Article article, List<ArticleTag> tags) {
         int num;
-        List<Object> result = checkTagsIsMemberInCache(tags);
-        if (result.isEmpty()) {
-            List<String> exTags = checkTagsIsMemberInDB(tags);
+        List<String> result;
+        result = checkTagsIsMemberInCache(tags);
+        if (result == null) {
+            result = checkTagsIsMemberInDB(tags);
         }
-        countMapper.addTagsCount(num);
-        if (articleMapper.save(article)) {
+        List<ArticleTag> newTags = Lists.transform(result, new Function<String, ArticleTag>() {
+            @Nullable
+            @Override
+            public ArticleTag apply(@Nullable String input) {
+                ArticleTag tag = new ArticleTag();
+                tag.setName(input);
+                return tag;
+            }
+        });
+        if (articleMapper.save(article) && articleTagMapper.saveBatch(newTags)) {
             Integer id = article.getId();
             if (articleTagRelationMapper.getBaseMapper().addArticleTagRelation(id, tags)) {
                 return true;
@@ -151,41 +173,6 @@ public class ArticleService {
         }
     }
 
-    private void asd(List<Object> result) {
-
-        if (!result.isEmpty()) {
-            List<String> new_tag = new ArrayList<>();
-            for (int i = 0; i < result.size(); i++) {
-                Object tag = result.get(i);
-                if (!((boolean) tag)) {
-                    new_tag.add(tags.get(i));
-                }
-            }
-            stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
-                @Override
-                public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    new_tag.forEach(tag -> {
-                        connection.sAdd(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG.getValue().getBytes(), tag.getBytes());
-                    });
-                    return null;
-                }
-            });
-            num = new_tag.size();
-        } else {
-            List<ArticleTag> list = articleTagMapper.list(new QueryWrapper<ArticleTag>().select("name"));
-            List<String> tagNames = list.stream().map(ArticleTag::getName).collect(Collectors.toList());
-            HashSet<String> set = new HashSet<>((int) ((list.size() / 0.75f) + 1));
-            set.addAll(tagNames);
-            List<String> ex_tag = new ArrayList<>();
-            tagNames.forEach(name -> {
-                if (set.add(name)) {
-                    ex_tag.add(name);
-                }
-            });
-            num = ex_tag.size();
-
-        }
-    }
 
     /**
      * 根据文章的唯一id进行删除
