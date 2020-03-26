@@ -17,6 +17,7 @@ import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.service.manager.ImageManager;
+import com.inkfish.blog.server.service.utils.ArticleServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import sun.misc.Unsafe;
 
 import java.io.IOException;
 import java.util.*;
@@ -57,6 +60,9 @@ public class ArticleService {
 
     @Autowired
     private CountMapper countMapper;
+
+    @Autowired
+    private ArticleServiceUtils articleServiceUtils;
 
 
     public void cleanLikesAndWatch(Integer id) {
@@ -94,48 +100,6 @@ public class ArticleService {
     }
 
 
-    /**
-     * 判断tags是否在cache中
-     */
-    private List<String> checkTagsIsMemberInCache(List<ArticleTag> tags) {
-        stringRedisTemplate.multi();
-        tags.forEach(tag -> {
-                    stringRedisTemplate.opsForSet().isMember(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG.getValue(), tag.getName());
-                }
-        );
-        List<Object> result = stringRedisTemplate.exec();
-
-        if (result.isEmpty()) {
-            return null;
-        } else {
-            List<String> newTags = new ArrayList<>();
-            for (int i = 0; i < result.size(); i++) {
-                Object tag = result.get(i);
-                if (!((boolean) tag)) {
-                    newTags.add(tags.get(i).getName());
-                }
-            }
-            return newTags;
-        }
-    }
-
-    /**
-     * 判断tags是否在DB中
-     */
-    private List<String> checkTagsIsMemberInDB(List<ArticleTag> tags) {
-        List<ArticleTag> list = articleTagMapper.list(new QueryWrapper<ArticleTag>().select("name"));
-        List<String> tagNames = list.stream().map(ArticleTag::getName).collect(Collectors.toList());
-        HashSet<String> set = new HashSet<>((int) ((list.size() / 0.75f) + 1));
-        set.addAll(tagNames);
-        List<String> exTags = new ArrayList<>();
-        tagNames.forEach(name -> {
-            if (set.add(name)) {
-                exTags.add(name);
-            }
-        });
-        return exTags;
-    }
-
     private boolean updateTagStoreCache(List<String> tags) {
 
         return true;
@@ -143,16 +107,15 @@ public class ArticleService {
 
 
 //    TODO AOP更改
+
     /**
      * 当有tags时的添加文章
      */
     @Transactional(rollbackFor = DBTransactionalException.class)
     public boolean addArticleWithTags(Article article, List<ArticleTag> tags) {
-        int num;
-        List<String> result;
-        result = checkTagsIsMemberInCache(tags);
-        if (result == null) {
-            result = checkTagsIsMemberInDB(tags);
+        List<String> result = articleServiceUtils.checkTagsIsMemberInCache(tags);
+        if (result.isEmpty()) {
+            result = articleServiceUtils.checkTagsIsMemberInDB(tags);
         }
         List<ArticleTag> newTags = Lists.transform(result, new Function<String, ArticleTag>() {
             @Nullable
@@ -164,10 +127,10 @@ public class ArticleService {
             }
         });
 
-
         if (articleMapper.save(article) && articleTagMapper.saveBatch(newTags)) {
             Integer id = article.getId();
             if (articleTagRelationMapper.getBaseMapper().addArticleTagRelation(id, tags)) {
+                updateExistTag(result);
                 return true;
             }
         }
@@ -180,6 +143,18 @@ public class ArticleService {
         }
     }
 
+//    TODO 优化：可以开一个线程来单独执行
+    protected void updateExistTag(List<String> tagsName) {
+        stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                tagsName.forEach(name -> {
+                    connection.sAdd(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG.getValue().getBytes(), name.getBytes());
+                });
+                return null;
+            }
+        });
+    }
 
     /**
      * 根据文章的唯一id进行删除

@@ -15,6 +15,6 @@ import java.util.List;
 
 @Mapper
 public interface ArticleTagRelationDao extends BaseMapper<ArticleAndTagRelation> {
-    @InsertProvider(type =ArticleTagRelationMapper.class,method = "addArticleTagRelationProvider")
-    public boolean addArticleTagRelation(@Param("id") Integer articleId,@Param("tags") List<ArticleTag>tagNames);
+    @InsertProvider(type = ArticleTagRelationMapper.class, method = "addArticleTagRelationProvider")
+    boolean addArticleTagRelation(@Param("id") Integer articleId, @Param("tags") List<ArticleTag> tagNames);
 }
