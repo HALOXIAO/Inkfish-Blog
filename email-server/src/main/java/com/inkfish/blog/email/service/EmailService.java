@@ -43,7 +43,7 @@ public class EmailService {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                 for (MessageExt msg : msgs) {
-                    String nameSpace = REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_NAMESPACE.getValue();
+                    String nameSpace = REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_PREFIX.getValue();
                     String body = new String(msg.getBody(), StandardCharsets.UTF_8);
                     if (!stringRedisTemplate.hasKey(nameSpace + body)) {
                         continue;
@@ -73,7 +73,7 @@ public class EmailService {
             @Override
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                 for (MessageExt msg : msgs) {
-                    String nameSpace = REDIS_NAMESPACE.EMAIL_VERIFICATION_REGISTER_NAMESPACE.getValue();
+                    String nameSpace = REDIS_NAMESPACE.EMAIL_VERIFICATION_REGISTER_PREFIX.getValue();
                     String body = new String(msg.getBody(), StandardCharsets.UTF_8);
                     if (!stringRedisTemplate.hasKey(nameSpace + body)) {
                         continue;

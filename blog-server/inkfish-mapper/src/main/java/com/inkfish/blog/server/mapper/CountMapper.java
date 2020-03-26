@@ -43,4 +43,12 @@ public class CountMapper extends ServiceImpl<CountDao, Count> {
         }
     }
 
+    @Transactional(rollbackFor = DBTransactionalException.class, propagation = Propagation.MANDATORY)
+    public void addTagsCount(int size){
+        if (!this.getBaseMapper().tagsDece(size)) {
+            throw new DBTransactionalException("inc tag total error");
+        }
+    }
+
+
 }

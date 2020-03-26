@@ -6,7 +6,7 @@ package com.inkfish.blog.server.common;
 public enum REDIS_ARTICLE_CACHE_NAMESPACE {
 
     //    Article Cache String
-    CACHE_ARTICLE_INFORMATION_NAMESPACE("cache:article:information::"),
+    CACHE_ARTICLE_INFORMATION_PREFIX("cache:article:information::"),
 
     //    Article Home Cache Sorted Set
     CACHE_ARTICLE_HOME_OVERVIEW("cache:article:home:overview"),

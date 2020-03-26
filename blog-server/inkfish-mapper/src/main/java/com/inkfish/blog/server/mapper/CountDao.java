@@ -23,5 +23,7 @@ public interface CountDao extends BaseMapper<Count> {
     @Update("UPDATE count SET tag_total = tag_total-1  where id=0 AND tag_total > 0")
     boolean tagDece();
 
+    @Update("UPDATE count SET tag_total = tag_total - #{x} WHERE id=0 AND tag_total >= #{x}")
+    boolean tagsDece(int x);
 
 }

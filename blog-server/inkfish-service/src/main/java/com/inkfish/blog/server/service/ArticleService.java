@@ -2,7 +2,10 @@ package com.inkfish.blog.server.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.inkfish.blog.server.common.REDIS_NAMESPACE;
+import com.inkfish.blog.server.common.REDIS_TAG_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.exception.DBTransactionalException;
 import com.inkfish.blog.server.mapper.ArticleMapper;
 import com.inkfish.blog.server.mapper.ArticleTagMapper;
@@ -13,26 +16,21 @@ import com.inkfish.blog.server.model.dto.TagAndArticleDTO;
 import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
-import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.manager.ImageManager;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -67,7 +65,7 @@ public class ArticleService {
             public String doInRedis(RedisConnection connection) throws DataAccessException {
                 connection.zRem(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue().getBytes(), String.valueOf(id).getBytes());
                 connection.zRem(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue().getBytes(), String.valueOf(id).getBytes());
-                connection.del(REDIS_NAMESPACE.ARTICLE_INFORMATION_ALREADY_LIKE_NAMESPACE.getValue().getBytes());
+                connection.del(REDIS_NAMESPACE.ARTICLE_INFORMATION_ALREADY_LIKE_PREFIX.getValue().getBytes());
                 return null;
             }
         });
@@ -95,14 +93,49 @@ public class ArticleService {
         return true;
     }
 
+    /**
+     * 判断tags是否在cache中
+     */
+    private List<String> checkTagsIsMemberInCache(List<ArticleTag> tags) {
+        stringRedisTemplate.multi();
+        tags.forEach(tag -> {
+                    stringRedisTemplate.opsForSet().isMember(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG.getValue(), tag.getName());
+                }
+        );
+        List<Object> result = stringRedisTemplate.exec();
 
+        if (result.isEmpty()) {
+            return null;
+        } else {
 
+            List<String> new_tag = new ArrayList<>();
+            for (int i = 0; i < result.size(); i++) {
+                Object tag = result.get(i);
+                if (!((boolean) tag)) {
+                    new_tag.add(tags.get(i));
+                }
+            }
+            return new_tag;
+        }
+        return null;
+    }
+
+    private List<String> checkTagsIsMemberInDB(List<ArticleTag> tags) {
+
+        return  null;
+    }
 
     /**
      * 当有tags时的添加文章
      */
     @Transactional(rollbackFor = DBTransactionalException.class)
     public boolean addArticleWithTags(Article article, List<ArticleTag> tags) {
+        int num;
+        List<Object> result = checkTagsIsMemberInCache(tags);
+        if (result.isEmpty()) {
+            List<String> exTags = checkTagsIsMemberInDB(tags);
+        }
+        countMapper.addTagsCount(num);
         if (articleMapper.save(article)) {
             Integer id = article.getId();
             if (articleTagRelationMapper.getBaseMapper().addArticleTagRelation(id, tags)) {
@@ -115,6 +148,42 @@ public class ArticleService {
             log.error(e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().isRollbackOnly();
             return false;
+        }
+    }
+
+    private void asd(List<Object> result) {
+
+        if (!result.isEmpty()) {
+            List<String> new_tag = new ArrayList<>();
+            for (int i = 0; i < result.size(); i++) {
+                Object tag = result.get(i);
+                if (!((boolean) tag)) {
+                    new_tag.add(tags.get(i));
+                }
+            }
+            stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
+                @Override
+                public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                    new_tag.forEach(tag -> {
+                        connection.sAdd(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG.getValue().getBytes(), tag.getBytes());
+                    });
+                    return null;
+                }
+            });
+            num = new_tag.size();
+        } else {
+            List<ArticleTag> list = articleTagMapper.list(new QueryWrapper<ArticleTag>().select("name"));
+            List<String> tagNames = list.stream().map(ArticleTag::getName).collect(Collectors.toList());
+            HashSet<String> set = new HashSet<>((int) ((list.size() / 0.75f) + 1));
+            set.addAll(tagNames);
+            List<String> ex_tag = new ArrayList<>();
+            tagNames.forEach(name -> {
+                if (set.add(name)) {
+                    ex_tag.add(name);
+                }
+            });
+            num = ex_tag.size();
+
         }
     }
 

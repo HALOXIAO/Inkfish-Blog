@@ -42,7 +42,7 @@ public class EmailManager {
     //TODO 可以对sendResult做一些处理
     //注意，消息幂等性完全由Consumer解决
     public void sendForgetPasswordEmail(String email, String verificationCode) throws MQClientException, RemotingException, InterruptedException, MQBrokerException {
-        stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_NAMESPACE.getValue() + email, verificationCode, Duration.ofMinutes(KEY_STORE_TIME));
+        stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_FORGET_PASSWORD_PREFIX.getValue() + email, verificationCode, Duration.ofMinutes(KEY_STORE_TIME));
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");//设置日期格式
         String key = email + "-" + LocalDateTime.now().format(fmt);
         DefaultMQProducer producer = new DefaultMQProducer("email");
@@ -56,7 +56,7 @@ public class EmailManager {
     }
 
     public void sendRegisterEmail(String email, String verificationCode) throws MQClientException, RemotingException, InterruptedException, MQBrokerException {
-        stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_REGISTER_NAMESPACE.getValue() + email, verificationCode, Duration.ofMinutes(KEY_STORE_TIME));
+        stringRedisTemplate.opsForValue().set(REDIS_NAMESPACE.EMAIL_VERIFICATION_REGISTER_PREFIX.getValue() + email, verificationCode, Duration.ofMinutes(KEY_STORE_TIME));
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");//设置日期格式
         String key = email + "-" + LocalDateTime.now().format(fmt);
         DefaultMQProducer producer = new DefaultMQProducer("email");
