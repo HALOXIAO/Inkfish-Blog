@@ -93,6 +93,7 @@ public class ArticleService {
         return true;
     }
 
+
     /**
      * 判断tags是否在cache中
      */
@@ -107,17 +108,20 @@ public class ArticleService {
         if (result.isEmpty()) {
             return null;
         } else {
-            List<String> new_tag = new ArrayList<>();
+            List<String> newTags = new ArrayList<>();
             for (int i = 0; i < result.size(); i++) {
                 Object tag = result.get(i);
                 if (!((boolean) tag)) {
-                    new_tag.add(tags.get(i).getName());
+                    newTags.add(tags.get(i).getName());
                 }
             }
-            return new_tag;
+            return newTags;
         }
     }
 
+    /**
+     *判断tags是否在DB中
+     */
     private List<String> checkTagsIsMemberInDB(List<ArticleTag> tags) {
         List<ArticleTag> list = articleTagMapper.list(new QueryWrapper<ArticleTag>().select("name"));
         List<String> tagNames = list.stream().map(ArticleTag::getName).collect(Collectors.toList());
@@ -132,7 +136,7 @@ public class ArticleService {
         return exTags;
     }
 
-    private boolean updateTagStoreCache(List<String> tags){
+    private boolean updateTagStoreCache(List<String> tags) {
 
         return true;
     }
