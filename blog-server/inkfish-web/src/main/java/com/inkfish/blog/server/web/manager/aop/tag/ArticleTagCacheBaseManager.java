@@ -9,27 +9,25 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.RedisZSetCommands;
-import org.springframework.data.redis.core.DefaultTypedTuple;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
  * @author HALOXIAO
  **/
-
+@Order(1)
 @Aspect
 @Component
 public class ArticleTagCacheBaseManager {
@@ -47,11 +45,10 @@ public class ArticleTagCacheBaseManager {
             stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    bean.getData().stream().forEach(articleTagVO -> {
+                    bean.getData().forEach(articleTagVO -> {
                                 connection.zAdd(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG_HOME.getValue().getBytes(), articleTagVO.getId().doubleValue(), JSON.toJSON(articleTagVO).toString().getBytes());
                             }
                     );
-
                     return null;
                 }
             });
@@ -64,11 +61,27 @@ public class ArticleTagCacheBaseManager {
         Set<String> result = stringRedisTemplate.opsForZSet().reverseRange(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG_HOME.getValue(), page - size, page - 1);
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         if (null != response && null != result) {
-            try (PrintWriter printWriter = response.getWriter()) {
-//                TODO 改一下write
-                printWriter.write(result.toString());
-                printWriter.flush();
+//            TODO 可能有问题
+            try (ServletOutputStream stream = response.getOutputStream()) {
+                stream.write(result.toString().getBytes());
+                stream.flush();
             }
+        }
+    }
+
+
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.TagController.deleteTag(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
+    public void deleteArticleTagCache(Integer id, ResultBean<Boolean> bean) {
+        if (bean.getCode() == RESULT_BEAN_STATUS_CODE.SUCCESS.getValue()) {
+            stringRedisTemplate.opsForSet().remove(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG.getValue(), id.toString());
+        }
+
+    }
+
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.TagController.deleteTag(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
+    public void deleteArticleTagHomeCache(Integer id, ResultBean<Boolean> bean) {
+        if (bean.getCode() == RESULT_BEAN_STATUS_CODE.SUCCESS.getValue()) {
+            stringRedisTemplate.opsForZSet().remove(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG_HOME.getValue(), id.toString());
         }
     }
 

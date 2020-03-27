@@ -26,6 +26,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -128,9 +129,9 @@ public class ArticleCacheBaseManager {
             bean.setData(list);
             response.setStatus(200);
             response.setCharacterEncoding("utf-8");
-            try (PrintWriter printWriter = response.getWriter()) {
-                printWriter.write(JSON.toJSON(bean).toString());
-                printWriter.flush();
+            try (ServletOutputStream stream = response.getOutputStream()) {
+                stream.write(JSON.toJSON(bean).toString().getBytes());
+                stream.flush();
             }
         }
     }
@@ -152,7 +153,7 @@ public class ArticleCacheBaseManager {
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.deleteArticle(Integer)) &&args(id)", returning = "bean", argNames = "id,bean")
     public void deleteHomeCache(Integer id, ResultBean<String> bean) {
         if (bean.getCode() == RESULT_BEAN_STATUS_CODE.SUCCESS.getValue()) {
-            stringRedisTemplate.opsForZSet().removeRangeByScore(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), id, id);
+            stringRedisTemplate.opsForZSet().remove(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), id);
         }
     }
 

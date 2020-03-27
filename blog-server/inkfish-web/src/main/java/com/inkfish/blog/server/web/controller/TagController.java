@@ -20,6 +20,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.cache.RedisCache;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -78,6 +79,14 @@ public class TagController {
         ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
         bean.setData(resultList);
         return bean;
+    }
+
+    @DeleteMapping("/tag")
+    public ResultBean<Boolean> deleteTag(Integer id) {
+        if (!articleTagService.deleteArticleTag(id)) {
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+        }
+        return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
     }
 
 

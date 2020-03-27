@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,9 +48,9 @@ public class CommentValidationManager {
         }
         if (enableComment != ARTICLE_STATUS_CODE.ARTICLE_COMMENT_ENABLE.getValue()) {
             HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
-            try (PrintWriter printWriter = response.getWriter()) {
+            try (ServletOutputStream stream = response.getOutputStream()) {
                 ResultBean<Boolean> bean = new ResultBean<>("target wrong", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
-                printWriter.write(JSON.toJSON(bean).toString());
+                stream.write(JSON.toJSON(bean).toString().getBytes());
             }
         }
 

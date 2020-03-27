@@ -58,7 +58,7 @@ public class ArticleTagService {
 
     public IPage<ArticleTag> getTagsNameWithPage(Integer page) {
         Page<ArticleTag> ipage = new Page<>(page, 10);
-        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name","id").eq("status", 1));
+        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name", "id").eq("status", 1));
     }
 
     public List<Article> getArticle(String tag) {
@@ -98,6 +98,10 @@ public class ArticleTagService {
         });
 
         return list;
+    }
+
+    public boolean deleteArticleTag(Integer tagId) {
+        return articleTagMapper.remove(new QueryWrapper<ArticleTag>().eq("id", tagId));
     }
 
 
