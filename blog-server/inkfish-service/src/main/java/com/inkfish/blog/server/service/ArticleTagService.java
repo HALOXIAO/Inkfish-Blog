@@ -104,12 +104,6 @@ public class ArticleTagService {
         return articleTagMapper.remove(new QueryWrapper<ArticleTag>().eq("id", tagId));
     }
 
-
-    public boolean saveOrUpdateArticleTags(Integer articleId, List<ArticleTag> tagsName) {
-
-        return false;
-    }
-
     public List<ArticleTag> addTags(List<String> tagsName) {
         List<ArticleTag> tags = Lists.transform(tagsName, new Function<String, ArticleTag>() {
             @Nullable
@@ -121,7 +115,7 @@ public class ArticleTagService {
             }
 
         });
-        if (articleTagMapper.saveOrUpdateBatch(tags)) {
+        if (articleTagMapper.saveBatch(tags)) {
             return tags;
         }
         return null;

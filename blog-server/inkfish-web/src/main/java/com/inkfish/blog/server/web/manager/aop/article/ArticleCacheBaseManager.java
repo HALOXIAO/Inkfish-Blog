@@ -1,41 +1,41 @@
 package com.inkfish.blog.server.web.manager.aop.article;
 
-        import com.alibaba.fastjson.JSON;
-        import com.alibaba.fastjson.TypeReference;
-        import com.inkfish.blog.server.common.*;
-        import com.inkfish.blog.server.mapper.convert.ArticlePushToArticleOverviewVO;
-        import com.inkfish.blog.server.model.front.ArticlePush;
-        import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
-        import com.inkfish.blog.server.model.vo.ArticleVO;
-        import com.inkfish.blog.server.service.ArticleTagService;
-        import com.inkfish.blog.server.service.UserBehaviorService;
-        import org.aspectj.lang.annotation.AfterReturning;
-        import org.aspectj.lang.annotation.Aspect;
-        import org.aspectj.lang.annotation.Before;
-        import org.aspectj.lang.annotation.Pointcut;
-        import org.springframework.beans.factory.annotation.Autowired;
-        import org.springframework.core.annotation.Order;
-        import org.springframework.dao.DataAccessException;
-        import org.springframework.data.redis.connection.RedisConnection;
-        import org.springframework.data.redis.core.DefaultTypedTuple;
-        import org.springframework.data.redis.core.RedisCallback;
-        import org.springframework.data.redis.core.StringRedisTemplate;
-        import org.springframework.data.redis.core.ZSetOperations;
-        import org.springframework.stereotype.Component;
-        import org.springframework.validation.BindingResult;
-        import org.springframework.web.context.request.RequestContextHolder;
-        import org.springframework.web.context.request.ServletRequestAttributes;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.inkfish.blog.server.common.*;
+import com.inkfish.blog.server.mapper.convert.ArticlePushToArticleOverviewVO;
+import com.inkfish.blog.server.model.front.ArticlePush;
+import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
+import com.inkfish.blog.server.model.vo.ArticleVO;
+import com.inkfish.blog.server.service.ArticleTagService;
+import com.inkfish.blog.server.service.UserBehaviorService;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.DefaultTypedTuple;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-        import javax.servlet.ServletOutputStream;
-        import javax.servlet.http.HttpServletResponse;
-        import java.io.IOException;
-        import java.io.OutputStream;
-        import java.io.PrintWriter;
-        import java.time.Duration;
-        import java.time.LocalDateTime;
-        import java.time.format.DateTimeFormatter;
-        import java.util.*;
-        import java.util.concurrent.ConcurrentSkipListSet;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * @author HALOXIAO
@@ -104,7 +104,6 @@ public class ArticleCacheBaseManager {
     /**
      * 更新缓存
      */
-
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
     public void updateArticleCache(Integer id, ResultBean<ArticleVO> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {

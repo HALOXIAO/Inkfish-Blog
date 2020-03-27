@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.inkfish.blog.server.common.REDIS_TAG_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;
 import com.inkfish.blog.server.common.ResultBean;
+import com.inkfish.blog.server.mapper.CountMapper;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.model.vo.ArticleTagVO;
 import org.aspectj.lang.annotation.After;
@@ -38,9 +39,11 @@ import java.util.Set;
 public class ArticleTagCacheBaseManager {
 
     private final StringRedisTemplate stringRedisTemplate;
+    private final CountMapper countMapper;
 
     @Autowired
-    public ArticleTagCacheBaseManager(StringRedisTemplate stringRedisTemplate) {
+    public ArticleTagCacheBaseManager(StringRedisTemplate stringRedisTemplate, CountMapper countMapper) {
+        this.countMapper = countMapper;
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
@@ -101,7 +104,7 @@ public class ArticleTagCacheBaseManager {
         }
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.TagController.addTags())&&args(tagsName)", returning = "bean", argNames = "tagsName,bean")
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.TagController.addTags( ))&&args(tagsName)", returning = "bean", argNames = "tagsName,bean")
     public void updateTagsCache(List<String> tagsName, ResultBean<Boolean> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
@@ -135,7 +138,7 @@ public class ArticleTagCacheBaseManager {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
                     result.forEach(tag -> {
-                        connection.zAdd(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG_HOME.getValue().getBytes(), tag.getId().doubleValue(), tag.getTagName().getBytes());
+                        connection.zAdd(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG_HOME.getValue().getBytes(), tag.getId().doubleValue(), JSON.toJSON(tag).toString().getBytes());
                     });
                     return null;
                 }
@@ -144,5 +147,11 @@ public class ArticleTagCacheBaseManager {
         }
     }
 
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.TagController.addTags())&&args(tagsName)", returning = "bean", argNames = "tagsName,bean")
+    public void updateTagCount(List<String> tagsName, ResultBean<Boolean> bean) {
+        if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
+
+        }
+    }
 
 }
