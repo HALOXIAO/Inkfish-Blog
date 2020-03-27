@@ -106,6 +106,7 @@ public class ArticleController {
 
 
 //    TODO 发布文章时，如果是新的Tag，则进行添加Tag操作
+
     /**
      * 已添加Cache
      */
@@ -121,8 +122,10 @@ public class ArticleController {
             }
             return bean;
         }
+        List<String> tagsName = articleP.getTagsName();
         //判断是发布文章还是更新文章
         if (articleP.getId() == null) {
+//            发布文章
             Article article = ArticlePushToArticle.INSTANCE.from(articleP);
             Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
             article.setCreateTime(timestamp);
@@ -131,11 +134,13 @@ public class ArticleController {
                 log.warn("add article fail");
                 return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
             }
+//            articleTagService.saveOrUpdateArticleTags(article.getId(),tagsName);
             userBehaviorService.initArticleViewsAndLikes(article.getId());
             ResultBean<Integer> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
             bean.setData(article.getId());
             return bean;
         } else {
+//            更新文章
             Article article = ArticlePushToArticle.INSTANCE.from(articleP);
             article.setUpdateTime(Timestamp.valueOf(LocalDateTime.now()));
             if (!articleService.updateArticle(article, articleP.getId())) {

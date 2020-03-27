@@ -58,7 +58,7 @@ public class ArticleTagService {
 
     public IPage<ArticleTag> getTagsNameWithPage(Integer page) {
         Page<ArticleTag> ipage = new Page<>(page, 10);
-        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name").eq("status", 1));
+        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name","id").eq("status", 1));
     }
 
     public List<Article> getArticle(String tag) {
@@ -100,8 +100,9 @@ public class ArticleTagService {
         return list;
     }
 
-//    TODO 专门更新ArticleTag的接口
-    public boolean updateArticleTag(Integer articleId, List<String> tagsName) {
+
+    public boolean saveOrUpdateArticleTags(Integer articleId, List<ArticleTag> tagsName) {
+
         return false;
     }
 

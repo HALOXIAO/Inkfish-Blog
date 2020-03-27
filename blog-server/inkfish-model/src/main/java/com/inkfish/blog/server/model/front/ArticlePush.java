@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @ApiModel("文章实体")
 public class ArticlePush {
@@ -35,14 +36,12 @@ public class ArticlePush {
     @Min(0)
     private Integer enableComment;
 
-
     @ApiModelProperty(
             required = true,
-            value = "分类信息，范围：1-20"
+            value = "Tag名称"
     )
     @NotNull
-    @Length(min = 1, max = 20)
-    private String categoryName;
+    private List<String> tagsName;
 
     @ApiModelProperty(
             required = true,
@@ -71,6 +70,14 @@ public class ArticlePush {
     private String content;
 
 
+    public List<String> getTagsName() {
+        return tagsName;
+    }
+
+    public void setTagsName(List<String> tagsName) {
+        this.tagsName = tagsName;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -95,13 +102,6 @@ public class ArticlePush {
         this.enableComment = enableComment;
     }
 
-    public String getCategoryName() {
-        return this.categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
 
     public Integer getStatus() {
         return this.status;
@@ -134,7 +134,7 @@ public class ArticlePush {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", enableComment=" + enableComment +
-                ", categoryName='" + categoryName + '\'' +
+                ", tagsName=" + tagsName +
                 ", overview='" + overview + '\'' +
                 ", status=" + status +
                 ", content='" + content + '\'' +

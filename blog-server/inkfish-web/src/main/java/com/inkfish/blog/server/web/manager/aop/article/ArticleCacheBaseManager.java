@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -41,7 +42,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @Component
 @Aspect
 @Order(2)
-public class ArticleCacheManager {
+public class ArticleCacheBaseManager {
 
     private final StringRedisTemplate stringRedisTemplate;
     private final UserBehaviorService userBehaviorService;
@@ -53,11 +54,16 @@ public class ArticleCacheManager {
 
 
     @Autowired
-    public ArticleCacheManager(StringRedisTemplate stringRedisTemplate, UserBehaviorService userBehaviorService, ArticleTagService articleTagService) {
+    public ArticleCacheBaseManager(StringRedisTemplate stringRedisTemplate, UserBehaviorService userBehaviorService, ArticleTagService articleTagService) {
         this.articleTagService = articleTagService;
         this.userBehaviorService = userBehaviorService;
         this.stringRedisTemplate = stringRedisTemplate;
     }
+
+
+    /**
+     * 返回Article的Cache
+     */
 
     @Before("execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)")
     public void getArticleCache(Integer id) throws IOException {
@@ -69,6 +75,7 @@ public class ArticleCacheManager {
             response.setHeader("Content-Type", "application/json");
             ResultBean<ArticleVO> bean = JSON.parseObject(content, new TypeReference<ResultBean<ArticleVO>>() {
             });
+//            获得动态的Likes和Views
             List<Object> result = stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
@@ -93,6 +100,9 @@ public class ArticleCacheManager {
 
     }
 
+    /**
+     * 更新缓存
+     */
 
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
     public void updateArticleCache(Integer id, ResultBean<ArticleVO> bean) {
@@ -101,12 +111,15 @@ public class ArticleCacheManager {
         }
     }
 
-    @Before(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer)) &&args(page,size)", argNames = "page,size")
+    /**
+     * 返回预览页的缓存
+     */
+    @Before(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer,Integer)) &&args(page,size)", argNames = "page,size")
     public void getHomeCache(Integer page, Integer size) throws IOException {
         int num = page * size;
         Set<String> result = stringRedisTemplate.opsForZSet().reverseRange(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), num - size, num - 1);
-        if (null != result) {
-            HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
+        HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
+        if (null != result && null != response) {
             List<ArticleOverviewVO> list = new LinkedList<>();
             result.forEach(content -> {
                 list.add(JSON.parseObject(content, ArticleOverviewVO.class));
@@ -122,8 +135,11 @@ public class ArticleCacheManager {
         }
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome())", returning = "bean", argNames = "bean")
-    public void addHomeCache(ResultBean<List<ArticleOverviewVO>> bean) {
+    /**
+     * 更新缓存
+     */
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer,Integer))&&args(page,size)", returning = "bean", argNames = "page,size,bean")
+    public void addHomeCache(Integer page, Integer size, ResultBean<List<ArticleOverviewVO>> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             ConcurrentSkipListSet<ZSetOperations.TypedTuple<String>> set = new ConcurrentSkipListSet<>();
             bean.getData().stream().forEach(articleOverviewVO -> {
@@ -141,7 +157,7 @@ public class ArticleCacheManager {
     }
 
 
-    @Pointcut("execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle(articleP)) &&args(articleP)")
+    @Pointcut("execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle()) &&args(articleP)")
     public void publishArticle(ArticlePush articleP) {
     }
 
@@ -168,8 +184,8 @@ public class ArticleCacheManager {
         }
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articleP)", returning = "bean", argNames = "articleP,bean")
-    public void deleteArticleCache(ArticlePush articleP, ResultBean<Integer> bean) {
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articleP,bindingResult)", returning = "bean", argNames = "articleP,bindingResult,bean")
+    public void deleteArticleCache(ArticlePush articleP, BindingResult bindingResult, ResultBean<Integer> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             if (null != articleP.getId()) {
                 stringRedisTemplate.delete(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_PREFIX.getValue() + articleP.getId());

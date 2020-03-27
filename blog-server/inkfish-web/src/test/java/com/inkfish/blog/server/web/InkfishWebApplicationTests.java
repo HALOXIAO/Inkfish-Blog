@@ -42,18 +42,6 @@ class InkfishWebApplicationTests {
 
     @Test
     void contextLoads() throws JsonProcessingException, IOException {
-        Article article = new Article();
-        article.setId(1);
-        article.setContent("1");
-        Timestamp time = Timestamp.valueOf(LocalDateTime.now());
-        article.setCreateTime(time);
-        article.setUpdateTime(time);
-        article.setStatus(1);
-        article.setOverview("1");
-        article.setTitle("1");
-
-        ArticleOverviewVO vo = ArticleToArticleOverviewVO.INSTANCE.toArticle(article);
-        System.out.println(vo.toString());
 
     }
 

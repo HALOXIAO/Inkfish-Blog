@@ -5,10 +5,10 @@ package com.inkfish.blog.server.common;
  **/
 public enum REDIS_TAG_CACHE_NAMESPACE {
 
-//    已存在的tag
-    CACHE_ARTICLE_TAG("cache:article:tag:exit_tag");
-
-
+    //    已存在的tag
+    CACHE_ARTICLE_TAG("cache:article:tag:exit_tag"),
+    //   Article Tag Home Cache Sorted set
+    CACHE_ARTICLE_TAG_HOME("cache:article:tag:home:article_tag");
     private final String value;
 
     REDIS_TAG_CACHE_NAMESPACE(String value) {

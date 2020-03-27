@@ -29,7 +29,6 @@ import java.util.Objects;
 @Aspect
 @Component
 public class CommentValidationManager {
-
     private  StringRedisTemplate stringRedisTemplate;
     private  ArticleService articleService;
 

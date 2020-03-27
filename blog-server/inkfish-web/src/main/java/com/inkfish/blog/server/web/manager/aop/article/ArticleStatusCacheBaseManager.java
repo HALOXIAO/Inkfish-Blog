@@ -13,6 +13,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
 
 /**
  * @author HALOXIAO
@@ -21,29 +22,36 @@ import org.springframework.stereotype.Component;
 @Order(2)
 @Component
 @Aspect
-public class ArticleStatusCacheManager {
+public class ArticleStatusCacheBaseManager {
 
     private final StringRedisTemplate stringRedisTemplate;
 
     @Autowired
-    public ArticleStatusCacheManager(StringRedisTemplate stringRedisTemplate) {
+    public ArticleStatusCacheBaseManager(StringRedisTemplate stringRedisTemplate) {
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articlePush)", returning = "bean", argNames = "articlePush,bean")
-    public void updateArticleStatus(ArticlePush articlePush, ResultBean<Integer> bean) {
+    /**
+     * 更新Article的Status和Comment Status的缓存
+     **/
+
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articleP)", returning = "bean", argNames = "articleP,bean")
+    public void updateArticleStatus(ArticlePush articleP, ResultBean<Integer> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
                 @Override
                 public Object doInRedis(RedisConnection connection) throws DataAccessException {
-                    connection.hSet(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_STATUS_INFORMATION.getValue().getBytes(), bean.getData().toString().getBytes(), articlePush.getStatus().toString().getBytes());
-                    connection.hSet(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_COMMENT_STATUS_INFORMATION.getValue().getBytes(), bean.getData().toString().getBytes(), articlePush.getEnableComment().toString().getBytes());
+                    connection.hSet(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_STATUS_INFORMATION.getValue().getBytes(), bean.getData().toString().getBytes(), articleP.getStatus().toString().getBytes());
+                    connection.hSet(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_COMMENT_STATUS_INFORMATION.getValue().getBytes(), bean.getData().toString().getBytes(), articleP.getEnableComment().toString().getBytes());
                     return null;
                 }
             });
         }
     }
 
+    /**
+     * 删除Article的Status和Comment Status的缓存
+     */
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.deleteArticle(Integer))&&args(id)", returning = "bean", argNames = "id,bean")
     public void deleteArticleStatus(Integer id, ResultBean<String> bean) {
 

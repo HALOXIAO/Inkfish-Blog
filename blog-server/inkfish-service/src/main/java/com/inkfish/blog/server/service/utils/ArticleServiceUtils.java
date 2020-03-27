@@ -5,7 +5,6 @@ import com.inkfish.blog.server.common.REDIS_TAG_CACHE_NAMESPACE;
 import com.inkfish.blog.server.mapper.ArticleTagMapper;
 import com.inkfish.blog.server.mapper.CountMapper;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
-import com.inkfish.blog.server.service.ArticleTagService;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -73,6 +72,7 @@ public class ArticleServiceUtils {
     }
 
     public void addTagsCount(int size){
+
     }
 
 

@@ -33,14 +33,14 @@ public class ArticleServiceAOP {
         this.articleTagService = articleTagService;
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.service.ArticleService.addArticleWithTags(article,tags))&&args(article,tags)", returning = "flag", argNames = "article,tags,flag")
-    public void updateTagCount(Article article, List<ArticleTag> tags, boolean flag) {
-        if (flag) {
-
-        } else {
-
-        }
-    }
+//    @AfterReturning(value = "execution(* com.inkfish.blog.server.service.ArticleService.addArticleWithTags(article,tags))&&args(article,tags)", returning = "flag", argNames = "article,tags,flag")
+//    public void updateTagCount(Article article, List<ArticleTag> tags, boolean flag) {
+//        if (flag) {
+//
+//        } else {
+//
+//        }
+//    }
 
 
 
