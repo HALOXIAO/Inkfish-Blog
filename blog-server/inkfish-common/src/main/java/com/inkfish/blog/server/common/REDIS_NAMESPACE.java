@@ -25,6 +25,7 @@ public enum REDIS_NAMESPACE {
 
 
 
+
     private final String value;
 
     REDIS_NAMESPACE(final String value) {

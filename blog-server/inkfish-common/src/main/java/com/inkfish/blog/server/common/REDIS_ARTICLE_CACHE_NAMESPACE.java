@@ -15,7 +15,10 @@ public enum REDIS_ARTICLE_CACHE_NAMESPACE {
     CACHE_ARTICLE_STATUS_INFORMATION("cache:article:status:article_status"),
 
     //    Article enableComment Cache Hash
-    CACHE_ARTICLE_COMMENT_STATUS_INFORMATION("cache:article:comment:status:enableComment_status");
+    CACHE_ARTICLE_COMMENT_STATUS_INFORMATION("cache:article:comment:status:enableComment_status"),
+
+    //    Article Count Cache String
+    CACHE_ARTICLE_COUNT("cache:article:count:num");
 
     private final String value;
 
