@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.inkfish.blog.server.mapper.ArticleTagMapper;
 import com.inkfish.blog.server.model.dto.TagAndArticleDTO;
 import com.inkfish.blog.server.model.pojo.Article;
@@ -11,6 +13,7 @@ import com.inkfish.blog.server.model.pojo.ArticleComment;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import io.swagger.models.auth.In;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +38,6 @@ public class ArticleTagService {
     @Autowired
     PaginationInterceptor iPage;
 
-    public boolean addTags(List<ArticleTag> tags) {
-        return articleTagMapper.saveBatch(tags);
-    }
 
     public boolean deleteTagWithName(String name) {
         return articleTagMapper.remove(new QueryWrapper<ArticleTag>().eq("name", name));
@@ -109,5 +109,23 @@ public class ArticleTagService {
 
         return false;
     }
+
+    public List<ArticleTag> addTags(List<String> tagsName) {
+        List<ArticleTag> tags = Lists.transform(tagsName, new Function<String, ArticleTag>() {
+            @Nullable
+            @Override
+            public ArticleTag apply(@Nullable String input) {
+                ArticleTag tag = new ArticleTag();
+                tag.setName(input);
+                return tag;
+            }
+
+        });
+        if (articleTagMapper.saveOrUpdateBatch(tags)) {
+            return tags;
+        }
+        return null;
+    }
+
 
 }
