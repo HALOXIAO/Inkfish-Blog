@@ -115,15 +115,28 @@ public class ArticleCacheBaseManager {
     @Before(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer,Integer)) &&args(page,size)", argNames = "page,size")
     public void getHomeCache(Integer page, Integer size) throws IOException {
         int num = page * size;
-        Set<String> result = stringRedisTemplate.opsForZSet().reverseRange(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), num - size, num - 1);
+        final int articleHomeListLength = 2;
+        List<Object> articleHomeList = stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
+            @Override
+            public Object doInRedis(RedisConnection connection) throws DataAccessException {
+                connection.zRevRange(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue().getBytes(), num - size, num - 1);
+                connection.get(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_COUNT.getValue().getBytes());
+                return null;
+            }
+        });
         HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
-        if (null != result && null != response) {
+        if (articleHomeList.size() == articleHomeListLength && null != response) {
+            Set<String> articleVOList = (Set<String>) articleHomeList.get(0);
+            Integer articleCount = (Integer) articleHomeList.get(1);
             List<ArticleOverviewVO> list = new LinkedList<>();
-            result.forEach(content -> {
+            articleVOList.forEach(content -> {
                 list.add(JSON.parseObject(content, ArticleOverviewVO.class));
             });
-            ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-            bean.setData(list);
+            ResultBean<ArticleHomeVO> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+            ArticleHomeVO result = new ArticleHomeVO();
+            result.setArticleList(list);
+            result.setArticlesTotal(articleCount);
+            bean.setData(result);
             response.setStatus(200);
             response.setCharacterEncoding("utf-8");
             try (ServletOutputStream stream = response.getOutputStream()) {
