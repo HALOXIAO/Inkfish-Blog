@@ -19,7 +19,7 @@ import org.springframework.validation.BindingResult;
  * @author HALOXIAO
  **/
 
-@Order(2)
+@Order(10)
 @Component
 @Aspect
 public class ArticleStatusCacheBaseManager {

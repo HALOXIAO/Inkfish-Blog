@@ -44,7 +44,7 @@ public class UserBehaviorService {
 
     }
 
-    public Map<VOTE_LIKES, Integer> getArticleLikesAndViewsById(Integer id) {
+    public Map<VOTE_LIKES, Integer> getArticleLikesAndViewsCache(Integer id) {
         List<Object> result = redisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
             public Object doInRedis(RedisConnection connection) throws DataAccessException {

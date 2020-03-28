@@ -34,7 +34,7 @@ import java.util.Set;
 /**
  * @author HALOXIAO
  **/
-@Order(1)
+@Order(9)
 @Aspect
 @Component
 public class ArticleTagCacheBaseManager {

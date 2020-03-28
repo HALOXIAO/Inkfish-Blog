@@ -1,5 +1,6 @@
 package com.inkfish.blog.server.service;
 
+import ch.qos.logback.core.joran.action.TimestampAction;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.common.base.Function;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -136,7 +138,7 @@ public class ArticleService {
     }
 
 
-//    TODO 优化：可以开一个线程来单独执行
+    //    TODO 优化：可以开一个线程来单独执行
     protected void updateExistTag(List<String> tagsName) {
         stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
             @Override
@@ -234,6 +236,10 @@ public class ArticleService {
             return -99;
         }
         return article.getStatus();
+    }
+
+    public Timestamp getCreateTime(Integer articleId) {
+        return articleMapper.getOne(new QueryWrapper<Article>().select("").eq("id", articleId)).getCreateTime();
     }
 
 }

@@ -26,7 +26,7 @@ import java.util.Objects;
 /**
  * @author HALOXIAO
  **/
-@Order(1)
+@Order(9)
 @Aspect
 @Component
 public class CommentValidationManager {

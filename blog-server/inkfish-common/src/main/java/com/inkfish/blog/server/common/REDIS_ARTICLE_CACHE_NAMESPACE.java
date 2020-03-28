@@ -8,7 +8,7 @@ public enum REDIS_ARTICLE_CACHE_NAMESPACE {
     //    Article Cache String
     CACHE_ARTICLE_INFORMATION_PREFIX("cache:article:information::"),
 
-    //    Article Home Cache Sorted Set
+    //    Article Home Cache Sorted Set ArticleOverviewVO JSON
     CACHE_ARTICLE_HOME_OVERVIEW("cache:article:home:overview"),
 
     //    Article Status Cache Hash

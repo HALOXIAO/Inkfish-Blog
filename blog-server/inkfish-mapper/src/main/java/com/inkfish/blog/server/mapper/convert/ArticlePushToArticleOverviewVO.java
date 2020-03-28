@@ -18,10 +18,10 @@ public interface ArticlePushToArticleOverviewVO {
     @Mappings({
             @Mapping(source = "id", target = "id"),
             @Mapping(source = "title", target = "title"),
-            @Mapping(target = "overview", ignore = true),
+            @Mapping(source = "tagsName", target = "tags"),
+            @Mapping(source = "overview",target = "overview"),
             @Mapping(target = "createTime", ignore = true),
             @Mapping(target = "updateTime", ignore = true),
-            @Mapping(target = "tags", ignore = true),
             @Mapping(target = "likes", ignore = true),
             @Mapping(target = "views", ignore = true)
     })
