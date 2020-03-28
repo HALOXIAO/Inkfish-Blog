@@ -42,10 +42,10 @@ public class ReplyCommentController {
                 log.warn(bindingResult.getFieldError().getField());
             }
         }
-            if (commentReplyService.pushCommentReply(commentReply)) {
-                return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-            }
-            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
+        if (commentReplyService.pushCommentReply(commentReply)) {
+            return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        }
+        return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
 
     }
 

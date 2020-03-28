@@ -28,7 +28,6 @@ public class CommentController {
     CommentService commentService;
 
 
-    @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     @GetMapping("/article/comment")
     public ResultBean<List<ArticleComment>> getAllComment(Integer articleId, Integer page, Integer size) {
         if (page == null || size ==null || page <= 0 || size < 0) {
@@ -41,6 +40,7 @@ public class CommentController {
     }
 
     @PostMapping("/article/comment")
+    @PreAuthorize("hasAnyRole('ROLE_ROOT','ROLE_NORMAL')")
     public ResultBean<Boolean> pushComment(@RequestBody @Valid ArticleComment articleComment, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             ResultBean<Boolean> bean = new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
@@ -58,6 +58,7 @@ public class CommentController {
     }
 
     @DeleteMapping("article/comment")
+    @PreAuthorize("hasAnyRole('ROLE_ROOT','ROLE_NORMAL')")
     public ResultBean<Boolean> deleteComment(Integer id) {
         if (commentService.deleteComment(id)) {
             return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);

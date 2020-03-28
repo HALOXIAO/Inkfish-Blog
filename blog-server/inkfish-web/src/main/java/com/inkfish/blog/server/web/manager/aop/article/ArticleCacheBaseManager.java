@@ -98,7 +98,7 @@ public class ArticleCacheBaseManager {
             }
             response.setContentType("application/json; charset=UTF-8");
             try (OutputStream stream = response.getOutputStream()) {
-                stream.write(JSON.toJSON(content).toString().getBytes());
+                stream.write(JSON.toJSON(bean).toString().getBytes());
                 stream.flush();
             }
         }

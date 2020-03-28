@@ -75,6 +75,7 @@ public class ArticleController {
     @ApiOperation(value = "获取文章")
     @ApiResponse(code = 200, message = "返回文章实体的所有信息")
     @GetMapping("/article")
+    @PreAuthorize("hasAnyRole('ROLE_ROOT','ROLE_NORMAL')")
     public ResultBean<ArticleVO> getArticle(@RequestParam(value = "id") Integer id) {
         if (id == null || id <= 0) {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
@@ -211,6 +212,7 @@ public class ArticleController {
     @ApiOperation(value = "首页信息", notes = "page为当前页数，最小为1，size为容量，最小为0")
     @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、")
     @GetMapping("/home")
+    @PreAuthorize("hasAnyRole('ROLE_ROOT','ROLE_NORMAL')")
     public ResultBean<ArticleHomeVO> getHome(Integer page, Integer size) {
         if (page == null || size == null || page <= 0 || size < 0 || !verifySize(size)) {
             return new ResultBean<>("argument error", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);

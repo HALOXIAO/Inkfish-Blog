@@ -9,6 +9,7 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +28,7 @@ public class AdminPanelController {
 
 
     @GetMapping("/admin/information/likes")
+    @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<PanelLikesVO>> getLikes() {
         Set<ZSetOperations.TypedTuple<String>> likes = stringRedisTemplate.opsForZSet().rangeByScoreWithScores(REDIS_NAMESPACE.ARTICLE_INFORMATION_LIKE.getValue(), -10, -1);
         if (likes == null) {
@@ -49,6 +51,7 @@ public class AdminPanelController {
     }
 
     @GetMapping("/admin/information/views")
+    @PreAuthorize("hasAnyRole('ROLE_ROOT')")
     public ResultBean<List<PanelViewsVO>> getViews() {
         Set<ZSetOperations.TypedTuple<String>> views = stringRedisTemplate.opsForZSet().rangeByScoreWithScores(REDIS_NAMESPACE.ARTICLE_INFORMATION_WATCH.getValue(), -10, -1);
         if (views == null) {
