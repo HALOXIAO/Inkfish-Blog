@@ -9,9 +9,11 @@ import com.inkfish.blog.server.mapper.convert.ArticleToArticleOverviewVO;
 import com.inkfish.blog.server.model.pojo.Article;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
+import com.inkfish.blog.server.model.vo.ArticleTagHomeVO;
 import com.inkfish.blog.server.model.vo.ArticleTagVO;
 import com.inkfish.blog.server.service.ArticleService;
 import com.inkfish.blog.server.service.ArticleTagService;
+import com.inkfish.blog.server.service.CountService;
 import com.inkfish.blog.server.service.UserBehaviorService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -42,9 +44,18 @@ public class TagController {
     @Autowired
     ArticleService articleService;
 
+    @Autowired
+    CountService countService;
+
+
+
+
     @GetMapping("/tag/all")
-    public ResultBean<List<ArticleTagVO>> allTags(Integer page, Integer size) {
-        IPage<ArticleTag> ipage = articleTagService.getTagsNameWithPage(page);
+    public ResultBean<ArticleTagHomeVO> allTags(Integer page, Integer size) {
+        if (page > 100) {
+            return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
+        }
+        IPage<ArticleTag> ipage = articleTagService.getTagsWithPage(page, size);
         List<ArticleTag> list = ipage.getRecords();
         if (list == null) {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
@@ -59,8 +70,11 @@ public class TagController {
                 return tagVO;
             }
         });
-        ResultBean<List<ArticleTagVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-        bean.setData(resultList);
+        ArticleTagHomeVO tagHome = new ArticleTagHomeVO();
+        tagHome.setTagsList(resultList);
+        tagHome.setTagTotal(countService.getTagCount());
+        ResultBean<ArticleTagHomeVO> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        bean.setData(tagHome);
         return bean;
     }
 
@@ -89,6 +103,23 @@ public class TagController {
             return new ResultBean<>("fail", RESULT_BEAN_STATUS_CODE.UNKNOWN_EXCEPTION);
         }
         return new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+    }
+
+    @GetMapping("/tag/select")
+    public ResultBean<List<String>> getSelectTag(Integer page) {
+        final Integer size = 20;
+        IPage<ArticleTag> iPage = articleTagService.getTagsNameWithPage(page, size);
+        List<ArticleTag> list = iPage.getRecords();
+        List<String> result = Lists.transform(list, new Function<ArticleTag, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable ArticleTag input) {
+                return input.getName();
+            }
+        });
+        ResultBean<List<String>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        bean.setData(result);
+        return bean;
     }
 
 

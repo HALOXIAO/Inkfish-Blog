@@ -5,6 +5,7 @@ import com.inkfish.blog.server.common.exception.DBTransactionalException;
 import com.inkfish.blog.server.mapper.CountMapper;
 import com.inkfish.blog.server.model.pojo.Count;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ public class CountService {
     }
 
     @Transactional(rollbackFor = DBTransactionalException.class, propagation = Propagation.MANDATORY)
-    protected void addArticleCount() {
+    public void addArticleCount() {
         if (!countMapper.getBaseMapper().articleIncre()) {
             throw new DBTransactionalException("inc article total error");
         }
@@ -31,9 +32,9 @@ public class CountService {
     }
 
     @Transactional(rollbackFor = DBTransactionalException.class, propagation = Propagation.MANDATORY)
-    protected void addTagCount() {
+    public void addTagCount() {
         if (!countMapper.getBaseMapper().tagIncre()) {
-            throw new DBTransactionalException("inc tag total error");
+            throw new DBTransactionalException("incr tag total error");
         }
     }
 

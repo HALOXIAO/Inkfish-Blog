@@ -9,7 +9,10 @@ import com.inkfish.blog.server.common.ResultBean;
 import com.inkfish.blog.server.common.exception.DBTransactionalException;
 import com.inkfish.blog.server.mapper.CountMapper;
 import com.inkfish.blog.server.model.pojo.ArticleTag;
+import com.inkfish.blog.server.model.vo.ArticleHomeVO;
+import com.inkfish.blog.server.model.vo.ArticleTagHomeVO;
 import com.inkfish.blog.server.model.vo.ArticleTagVO;
+import com.inkfish.blog.server.service.CountService;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -28,6 +31,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -40,11 +45,11 @@ import java.util.Set;
 public class ArticleTagCacheBaseManager {
 
     private final StringRedisTemplate stringRedisTemplate;
-    private final CountMapper countMapper;
+    private final CountService countService;
 
     @Autowired
-    public ArticleTagCacheBaseManager(StringRedisTemplate stringRedisTemplate, CountMapper countMapper) {
-        this.countMapper = countMapper;
+    public ArticleTagCacheBaseManager(StringRedisTemplate stringRedisTemplate, CountService countService) {
+        this.countService = countService;
         this.stringRedisTemplate = stringRedisTemplate;
     }
 
@@ -97,15 +102,24 @@ public class ArticleTagCacheBaseManager {
         Set<String> result = stringRedisTemplate.opsForZSet().reverseRange(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG_HOME.getValue(), page - size, page - 1);
         HttpServletResponse response = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getResponse();
         if (null != response && null != result) {
-//            TODO 可能有问题
+            List<ArticleTagVO> tags = new LinkedList<>();
+            result.forEach(tag -> {
+                tags.add(JSON.parseObject(tag, ArticleTagVO.class));
+            });
+            ArticleTagHomeVO tagHome = new ArticleTagHomeVO();
+            tagHome.setTagsList(tags);
+            tagHome.setTagTotal(countService.getTagCount());
+            ResultBean<ArticleTagHomeVO> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+            bean.setData(tagHome);
+            response.setContentType("application/json; charset=UTF-8");
             try (ServletOutputStream stream = response.getOutputStream()) {
-                stream.write(result.toString().getBytes());
+                stream.write(JSON.toJSON(bean).toString().getBytes());
                 stream.flush();
             }
         }
     }
 
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.TagController.addTags( ))&&args(tagsName)", returning = "bean", argNames = "tagsName,bean")
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.TagController.addTags())&&args(tagsName)", returning = "bean", argNames = "tagsName,bean")
     public void updateTagsCache(List<String> tagsName, ResultBean<Boolean> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             stringRedisTemplate.executePipelined(new RedisCallback<Object>() {
@@ -149,11 +163,10 @@ public class ArticleTagCacheBaseManager {
     }
 
     @Transactional(rollbackFor = DBTransactionalException.class)
-    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.TagController.addTags())&&args(tagsName)", returning = "bean", argNames = "tagsName,bean")
-    public void updateTagCount(List<String> tagsName, ResultBean<Boolean> bean) {
-        if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
-            countMapper.addTagsCount(tagsName.size());
-            stringRedisTemplate.opsForValue().increment(REDIS_TAG_CACHE_NAMESPACE.CACHE_ARTICLE_TAG_COUNT.getValue(), tagsName.size());
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.service.ArticleTagService.addTags())&&args(tagsName)", returning = "tagsList", argNames = "tagsName,tagsList")
+    public void updateTagCount(List<String> tagsName, List<ArticleTag> tagsList) {
+        if (tagsList != null) {
+            countService.addTagCount();
         }
     }
 

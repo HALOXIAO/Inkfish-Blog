@@ -56,10 +56,15 @@ public class ArticleTagService {
     }
 
 
-    public IPage<ArticleTag> getTagsNameWithPage(Integer page) {
-        Page<ArticleTag> ipage = new Page<>(page, 10);
-        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name", "id").eq("status", 1));
+    public IPage<ArticleTag> getTagsWithPage(Integer page, Integer size) {
+        Page<ArticleTag> ipage = new Page<>(page, size);
+        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name", "id"));
     }
+    public IPage<ArticleTag> getTagsNameWithPage(Integer page,Integer size){
+        Page<ArticleTag>ipage = new Page<>(page,size);
+        return articleTagMapper.page(ipage, new QueryWrapper<ArticleTag>().select("name", "id"));
+    }
+
 
     public List<Article> getArticle(String tag) {
         return articleTagMapper.getBaseMapper().getArticleOverview(tag);
@@ -113,7 +118,6 @@ public class ArticleTagService {
                 tag.setName(input);
                 return tag;
             }
-
         });
         if (articleTagMapper.saveBatch(tags)) {
             return tags;
