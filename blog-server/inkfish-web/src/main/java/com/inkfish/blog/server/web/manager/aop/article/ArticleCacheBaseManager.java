@@ -72,11 +72,11 @@ public class ArticleCacheBaseManager {
     @Before("execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)")
     public void getArticleCache(Integer id) throws IOException {
         String content = stringRedisTemplate.opsForValue().get(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_PREFIX.getValue() + id);
-        if (null != content) {
-            HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
+        HttpServletResponse response = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getResponse();
+        if (null != content && null != response) {
             response.setCharacterEncoding("utf-8");
             response.setStatus(200);
-            response.setHeader("Content-Type", "application/json");
+            response.setContentType("application/json; charset=UTF-8");
             ResultBean<ArticleVO> bean = JSON.parseObject(content, new TypeReference<ResultBean<ArticleVO>>() {
             });
 //            获得动态的Likes和Views
@@ -204,7 +204,6 @@ public class ArticleCacheBaseManager {
                 overviewVO.setTags(articleP.getTagsName());
                 overviewVO.setCreateTime(format.format(createTime));
                 stringRedisTemplate.opsForZSet().add(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), JSON.toJSON(overviewVO).toString(), id.doubleValue());
-
             }
         }
     }
