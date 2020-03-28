@@ -1,7 +1,9 @@
 package com.inkfish.blog.server.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.inkfish.blog.server.common.exception.DBTransactionalException;
 import com.inkfish.blog.server.mapper.CountMapper;
+import com.inkfish.blog.server.model.pojo.Count;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -34,5 +36,16 @@ public class CountService {
             throw new DBTransactionalException("inc tag total error");
         }
     }
+
+    public Integer getArticleCount() {
+        Count count = countMapper.getOne(new QueryWrapper<Count>().select("article_total").eq("id", 0));
+        return count.getArticleTotal();
+    }
+
+    public Integer getTagCount() {
+        Count count = countMapper.getOne(new QueryWrapper<Count>().select("tag_total").eq("id", 0));
+        return count.getTagTotal();
+    }
+
 
 }

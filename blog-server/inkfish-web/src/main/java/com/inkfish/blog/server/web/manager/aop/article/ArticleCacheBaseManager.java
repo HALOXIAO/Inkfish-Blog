@@ -5,6 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.inkfish.blog.server.common.*;
 import com.inkfish.blog.server.mapper.convert.ArticlePushToArticleOverviewVO;
 import com.inkfish.blog.server.model.front.ArticlePush;
+import com.inkfish.blog.server.model.vo.ArticleHomeVO;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.ArticleTagService;
@@ -12,7 +13,6 @@ import com.inkfish.blog.server.service.UserBehaviorService;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
@@ -30,7 +30,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -65,7 +64,6 @@ public class ArticleCacheBaseManager {
     /**
      * 返回Article的Cache
      */
-
     @Before("execution(* com.inkfish.blog.server.web.controller.ArticleController.getArticle(Integer))&&args(id)")
     public void getArticleCache(Integer id) throws IOException {
         String content = stringRedisTemplate.opsForValue().get(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_INFORMATION_PREFIX.getValue() + id);
@@ -136,13 +134,13 @@ public class ArticleCacheBaseManager {
     }
 
     /**
-     * 更新缓存
+     * 如果getHome成功，则更新Article Home Cache
      */
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.getHome(Integer,Integer))&&args(page,size)", returning = "bean", argNames = "page,size,bean")
-    public void addHomeCache(Integer page, Integer size, ResultBean<List<ArticleOverviewVO>> bean) {
+    public void addHomeCache(Integer page, Integer size, ResultBean<ArticleHomeVO> bean) {
         if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
             ConcurrentSkipListSet<ZSetOperations.TypedTuple<String>> set = new ConcurrentSkipListSet<>();
-            bean.getData().stream().forEach(articleOverviewVO -> {
+            bean.getData().getArticleList().forEach(articleOverviewVO -> {
                 set.add(new DefaultTypedTuple<>((String) JSON.toJSON(articleOverviewVO), articleOverviewVO.getId().doubleValue()));
             });
             stringRedisTemplate.opsForZSet().add(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_HOME_OVERVIEW.getValue(), set);
@@ -156,10 +154,6 @@ public class ArticleCacheBaseManager {
         }
     }
 
-
-    @Pointcut("execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle()) &&args(articleP)")
-    public void publishArticle(ArticlePush articleP) {
-    }
 
     @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articleP)", returning = "bean", argNames = "articleP,bean")
     public void updateHomeCache(ArticlePush articleP, ResultBean<Integer> bean) {
@@ -192,5 +186,13 @@ public class ArticleCacheBaseManager {
             }
         }
     }
+
+    @AfterReturning(value = "execution(* com.inkfish.blog.server.web.controller.ArticleController.publishArticle())&&args(articleP,bindingResult)", returning = "bean", argNames = "articleP,bindingResult,bean")
+    public void updateArticleCount(ArticlePush articleP, BindingResult bindingResult, ResultBean<Integer> bean) {
+        if (RESULT_BEAN_STATUS_CODE.SUCCESS.getValue() == bean.getCode()) {
+            stringRedisTemplate.opsForValue().increment(REDIS_ARTICLE_CACHE_NAMESPACE.CACHE_ARTICLE_COUNT.getValue(), 1);
+        }
+    }
+
 
 }

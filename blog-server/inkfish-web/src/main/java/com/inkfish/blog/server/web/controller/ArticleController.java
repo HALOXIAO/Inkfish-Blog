@@ -7,10 +7,12 @@ import com.inkfish.blog.server.mapper.convert.ArticlePushToArticle;
 import com.inkfish.blog.server.mapper.convert.ArticleToArticleVO;
 import com.inkfish.blog.server.model.front.ArticlePush;
 import com.inkfish.blog.server.model.pojo.Article;
+import com.inkfish.blog.server.model.vo.ArticleHomeVO;
 import com.inkfish.blog.server.model.vo.ArticleOverviewVO;
 import com.inkfish.blog.server.model.vo.ArticleVO;
 import com.inkfish.blog.server.service.ArticleService;
 import com.inkfish.blog.server.service.ArticleTagService;
+import com.inkfish.blog.server.service.CountService;
 import com.inkfish.blog.server.service.UserBehaviorService;
 import com.inkfish.blog.server.service.manager.ImageManager;
 import io.swagger.annotations.Api;
@@ -59,6 +61,9 @@ public class ArticleController {
 
     @Autowired
     private UserBehaviorService userBehaviorService;
+
+    @Autowired
+    private CountService countService;
 
 
     protected final String DATE_PATTERN = "yyyy-MM-dd";
@@ -206,15 +211,19 @@ public class ArticleController {
     @ApiOperation(value = "首页信息", notes = "page为当前页数，最小为1，size为容量，最小为0")
     @ApiResponse(code = 200, message = "有可能返回的Code：参数异常、成功、未知异常、未登录、")
     @GetMapping("/home")
-    public ResultBean<List<ArticleOverviewVO>> getHome(Integer page, Integer size) {
+    public ResultBean<ArticleHomeVO> getHome(Integer page, Integer size) {
         if (page == null || size == null || page <= 0 || size < 0 || !verifySize(size)) {
             return new ResultBean<>("argument error", RESULT_BEAN_STATUS_CODE.ARGUMENT_EXCEPTION);
         }
         page--;
         List<ArticleOverviewVO> list = articleService.getArticleOverviewPage(page, size);
         list = articleService.addArticleOverviewVOLikesAndWatchList(list);
-        ResultBean<List<ArticleOverviewVO>> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
-        bean.setData(list);
+        int total = countService.getArticleCount();
+        ResultBean<ArticleHomeVO> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
+        ArticleHomeVO result = new ArticleHomeVO();
+        result.setArticleList(list);
+        result.setArticlesTotal(total);
+        bean.setData(result);
         return bean;
     }
 
