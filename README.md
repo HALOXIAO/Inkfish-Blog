@@ -7,7 +7,7 @@ Inkfish-Blog \
 您可以将它作为个人博客的选择，也可以用于学习。\
 额外补充： \
 本项目的前端和后台不仅是分离的，在github项目上也是分离的😂 \
-前端项目地址：https://github.com/cuehuabuleng/my-blog \
+前端项目地址：https://github.com/cuehuabuleng/my-blog 
 
 ### 版本迭代说明：
 目前为V1.0 \
