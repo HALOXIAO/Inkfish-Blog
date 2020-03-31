@@ -19,7 +19,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.remoting.exception.RemotingException;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -57,6 +60,9 @@ public class UserController {
 
     @Autowired
     EmailService emailService;
+
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
 
     private final String VERIFICATION_CODE = "verificationCode";
 
@@ -176,6 +182,7 @@ public class UserController {
     @ApiOperation(value = "Github登陆")
     @PostMapping("")
     public ResultBean<String> test() {
+        RedissonClient redisson =  Redisson.create();
         return null;
     }
 
