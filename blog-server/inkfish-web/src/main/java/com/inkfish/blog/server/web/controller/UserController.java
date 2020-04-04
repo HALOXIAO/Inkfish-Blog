@@ -102,7 +102,7 @@ public class UserController {
         if (!email.getCode().equals(httpSession.getAttribute(VERIFICATION_CODE))) {
             httpSession.removeAttribute(VERIFICATION_CODE);
             return new ResultBean<>("code error", RESULT_BEAN_STATUS_CODE.CHECK_FAIL);
-        }`
+        }
         try {
             String code = emailService.registerCode(email.toString());
             httpSession.setAttribute(SESSION_CODE.REGISTER_VERIFICATION_CODE.getValue(), code);
