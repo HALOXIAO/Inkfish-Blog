@@ -1,4 +1,4 @@
-package com.inkfish.blog.server.web.manager.aop.article;
+package com.inkfish.blog.server.web.manager.cache.article;
 
 import com.inkfish.blog.server.common.REDIS_ARTICLE_CACHE_NAMESPACE;
 import com.inkfish.blog.server.common.RESULT_BEAN_STATUS_CODE;

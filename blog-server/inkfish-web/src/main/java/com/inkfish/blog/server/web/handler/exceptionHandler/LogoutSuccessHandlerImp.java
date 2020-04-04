@@ -21,12 +21,8 @@ import java.io.PrintWriter;
 @Component
 public class LogoutSuccessHandlerImp implements LogoutSuccessHandler {
 
-    @Autowired
-    HttpSession httpSession;
-
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        httpSession.removeAttribute("username");
         try (PrintWriter printWriter = response.getWriter()){
             ResultBean<String>bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
             printWriter.write(JSON.toJSONString(bean));

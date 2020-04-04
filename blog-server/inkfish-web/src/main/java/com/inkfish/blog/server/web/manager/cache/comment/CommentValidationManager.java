@@ -1,4 +1,4 @@
-package com.inkfish.blog.server.web.manager.aop.comment;
+package com.inkfish.blog.server.web.manager.cache.comment;
 
 import com.alibaba.fastjson.JSON;
 import com.inkfish.blog.server.common.ARTICLE_STATUS_CODE;
@@ -13,14 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Objects;
 
 /**

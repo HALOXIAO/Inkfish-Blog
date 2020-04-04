@@ -23,12 +23,8 @@ import java.io.PrintWriter;
 @Slf4j
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Autowired
-    HttpSession httpSession;
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        httpSession.setAttribute("username",authentication.getName());
         try (PrintWriter printWriter = response.getWriter()) {
             ResultBean<String> bean = new ResultBean<>("success", RESULT_BEAN_STATUS_CODE.SUCCESS);
             printWriter.write(JSON.toJSONString(bean));

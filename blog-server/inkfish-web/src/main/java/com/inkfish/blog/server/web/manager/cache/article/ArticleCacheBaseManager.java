@@ -1,4 +1,4 @@
-package com.inkfish.blog.server.web.manager.aop.article;
+package com.inkfish.blog.server.web.manager.cache.article;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
